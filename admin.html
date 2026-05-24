@@ -712,69 +712,67 @@ document.getElementById('create-form').addEventListener('submit', async (e) => {
   hideAlerts('create');
 
   const firstName = document.getElementById('c-firstname').value.trim();
-  const lastName = document.getElementById('c-lastname').value.trim();
-  const email = document.getElementById('c-email').value.trim();
-  const password = document.getElementById('c-password').value;
-  const badge = document.getElementById('c-badge').value.trim();
-  const dept = document.getElementById('c-dept').value;
-  const role = document.getElementById('c-role').value;
-  const color = document.getElementById('c-color').value;
+  const lastName  = document.getElementById('c-lastname').value.trim();
+  const email     = document.getElementById('c-email').value.trim();
+  const password  = document.getElementById('c-password').value;
+  const badge     = document.getElementById('c-badge').value.trim();
+  const dept      = document.getElementById('c-dept').value;
+  const role      = document.getElementById('c-role').value;
+  const color     = document.getElementById('c-color').value;
 
   try {
     if (password.length < 8) throw new Error('Le mot de passe doit contenir au moins 8 caractères.');
-    if (!dept || !role) throw new Error('Veuillez sélectionner un département et un rôle.');
+    if (!dept || !role)      throw new Error('Veuillez sélectionner un département et un rôle.');
 
-    // Create auth user
-    const { data: authData, error: authError } = await sb.auth.admin
-      ? await createAuthUser(email, password)
-      : await sb.auth.signUp({ email, password });
+    // 1. Créer le compte auth (email confirm doit être OFF dans Supabase Auth settings)
+    const { data: authData, error: authError } = await sb.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: null }
+    });
 
     if (authError) throw authError;
 
-    // Wait a moment for the user to be created
-    await new Promise(r => setTimeout(r, 500));
+    const userId = authData?.user?.id;
+    if (!userId) throw new Error('Supabase n\'a pas retourné d\'ID utilisateur. Vérifiez que "Enable email confirmations" est désactivé dans Authentication → Settings.');
 
-    // We need to use the service role for this - using a workaround
-    // The profile will be inserted directly
-    const userId = authData.user?.id;
-    if (!userId) throw new Error('Erreur lors de la création du compte utilisateur.');
+    // 2. Attendre que l'utilisateur soit bien enregistré
+    await new Promise(r => setTimeout(r, 800));
 
+    // 3. Insérer le profil
     const { error: profileError } = await sb.from('profiles').insert({
-      id: userId,
+      id:           userId,
       email,
-      full_name: `${firstName} ${lastName}`,
+      full_name:    `${firstName} ${lastName}`,
       badge_number: badge || null,
       role,
-      department: dept,
+      department:   dept,
       avatar_color: color,
-      is_active: true,
+      is_active:    true,
     });
 
-    if (profileError) throw profileError;
+    if (profileError) throw new Error('Profil : ' + profileError.message);
 
-    // Log
+    // 4. Log
     await sb.from('activity_logs').insert({
-      action: 'create_account',
-      target: email,
+      action:   'create_account',
+      target:   email,
       metadata: { role, department: dept, full_name: `${firstName} ${lastName}` }
     });
 
-    showAlert('create', 'success', `✅ Compte créé avec succès pour ${firstName} ${lastName}. Identifiants : ${email} / mot de passe temporaire fourni.`);
+    showAlert('create', 'success',
+      `✅ Compte créé pour ${firstName} ${lastName}.\n📧 Email : ${email}\n🔑 Le membre peut se connecter immédiatement.`);
     document.getElementById('create-form').reset();
+    resetCreateForm();
     loadUsers();
 
   } catch (err) {
-    showAlert('create', 'error', err.message);
+    showAlert('create', 'error', '❌ ' + err.message);
   }
 
   btn.disabled = false;
   btn.textContent = '✅ Créer le compte';
 });
-
-async function createAuthUser(email, password) {
-  // Use signUp since we don't have admin access from anon key
-  return await sb.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
-}
 
 // EDIT USER
 function openEdit(userId) {
