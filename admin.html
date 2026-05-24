@@ -1,0 +1,918 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DOJ Portal — Administration</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy-mid:#112240;--blue:#1a3a6e;--blue-mid:#2251a3;--blue-lt:#E8F0FA;
+  --gold:#c9a84c;--gold-lt:#e8c96a;--white:#ffffff;
+  --gray-1:#f8f8f6;--gray-2:#ebebeb;--gray-3:#aaaaaa;--gray-4:#666;--gray-dk:#2c2c2c;
+  --red:#c0392b;--red-lt:#fdeaea;--green:#27ae60;--green-lt:#eafaf1;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:'Libre Franklin',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --radius:6px;--shadow:0 2px 16px rgba(0,0,0,0.08);
+}
+html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);color:var(--gray-dk);}
+
+/* NAV */
+.topnav{
+  background:var(--navy);border-bottom:1px solid rgba(201,168,76,0.3);
+  position:sticky;top:0;z-index:100;
+}
+.topnav-inner{
+  max-width:1400px;margin:0 auto;padding:0 32px;
+  display:flex;align-items:center;gap:16px;height:60px;
+}
+.nav-logo{
+  font-family:var(--font-serif);font-size:16px;color:var(--white);
+  font-weight:700;display:flex;align-items:center;gap:10px;text-decoration:none;
+}
+.nav-logo .seal{
+  width:32px;height:32px;border:1.5px solid var(--gold);border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;color:var(--gold);font-weight:900;font-family:var(--font-serif);
+}
+.nav-logo span{color:var(--gold);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.admin-badge{
+  font-family:var(--font-mono);font-size:10px;
+  background:rgba(201,168,76,0.15);color:var(--gold);
+  border:1px solid rgba(201,168,76,0.3);
+  padding:4px 10px;border-radius:3px;letter-spacing:.08em;
+}
+.nav-user{font-size:13px;color:rgba(255,255,255,0.5);}
+.logout-btn{
+  background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
+  color:rgba(255,255,255,0.7);font-size:12px;padding:6px 14px;
+  border-radius:var(--radius);cursor:pointer;font-family:var(--font-sans);
+  transition:all .2s;
+}
+.logout-btn:hover{background:rgba(255,255,255,0.15);color:var(--white);}
+
+/* LAYOUT */
+.layout{max-width:1400px;margin:0 auto;padding:32px;display:grid;grid-template-columns:240px 1fr;gap:24px;}
+
+/* SIDEBAR */
+.sidebar{display:flex;flex-direction:column;gap:8px;}
+.sidebar-section{font-family:var(--font-mono);font-size:10px;color:var(--gray-3);letter-spacing:.1em;text-transform:uppercase;padding:0 12px;margin-bottom:4px;margin-top:8px;}
+.sidebar-link{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;border-radius:var(--radius);
+  font-size:13px;font-weight:500;color:var(--gray-4);
+  cursor:pointer;transition:all .2s;text-decoration:none;
+  border:none;background:none;width:100%;text-align:left;
+}
+.sidebar-link:hover{background:var(--gray-2);color:var(--gray-dk);}
+.sidebar-link.active{background:var(--blue-lt);color:var(--blue-mid);font-weight:600;}
+.sidebar-link .icon{font-size:15px;width:20px;text-align:center;}
+
+/* MAIN */
+.main-content{min-width:0;}
+.page-header{margin-bottom:28px;}
+.page-title{font-family:var(--font-serif);font-size:26px;color:var(--navy);font-weight:700;margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--gray-3);}
+
+/* CARDS */
+.card{background:var(--white);border:1px solid var(--gray-2);border-radius:8px;padding:24px;margin-bottom:20px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--gray-2);}
+.card-title{font-family:var(--font-serif);font-size:18px;color:var(--navy);font-weight:700;}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:24px;}
+.stat-card{
+  background:var(--white);border:1px solid var(--gray-2);border-radius:8px;
+  padding:20px;display:flex;align-items:center;gap:14px;
+}
+.stat-icon{font-size:24px;}
+.stat-num{font-family:var(--font-mono);font-size:24px;font-weight:500;color:var(--navy);line-height:1;}
+.stat-label{font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-top:3px;}
+
+/* FORM */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.field{margin-bottom:0;}
+.field.full{grid-column:1/-1;}
+label{display:block;font-size:11px;font-weight:600;color:var(--navy);margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em;}
+input[type=text],input[type=email],input[type=password],select{
+  width:100%;padding:11px 14px;
+  border:1.5px solid var(--gray-2);border-radius:var(--radius);
+  font-family:var(--font-sans);font-size:14px;color:var(--gray-dk);
+  background:var(--gray-1);transition:border-color .2s,box-shadow .2s;outline:none;
+}
+input:focus,select:focus{
+  border-color:var(--blue-mid);
+  box-shadow:0 0 0 3px rgba(34,81,163,0.1);background:var(--white);
+}
+select{cursor:pointer;}
+
+/* BUTTONS */
+.btn{
+  padding:10px 20px;border-radius:var(--radius);font-family:var(--font-sans);
+  font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;
+  border:none;display:inline-flex;align-items:center;gap:7px;
+}
+.btn-primary{background:var(--navy);color:var(--white);}
+.btn-primary:hover{background:var(--blue);}
+.btn-danger{background:var(--red-lt);color:var(--red);border:1px solid rgba(192,57,43,0.2);}
+.btn-danger:hover{background:var(--red);color:var(--white);}
+.btn-success{background:var(--green-lt);color:var(--green);border:1px solid rgba(39,174,96,0.2);}
+.btn-success:hover{background:var(--green);color:var(--white);}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn:disabled{opacity:.5;cursor:default;}
+
+/* TABLE */
+.table-wrap{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+th{
+  text-align:left;padding:10px 14px;
+  font-size:11px;font-weight:600;color:var(--gray-3);
+  text-transform:uppercase;letter-spacing:.06em;
+  border-bottom:1px solid var(--gray-2);background:var(--gray-1);
+}
+td{padding:12px 14px;border-bottom:1px solid var(--gray-2);vertical-align:middle;}
+tr:last-child td{border-bottom:none;}
+tr:hover td{background:var(--gray-1);}
+
+/* BADGES */
+.role-badge{
+  font-family:var(--font-mono);font-size:10px;
+  padding:3px 8px;border-radius:3px;font-weight:500;
+  letter-spacing:.04em;white-space:nowrap;
+}
+.dept-doj{background:#e8f0fa;color:#1a3a6e;}
+.dept-cour{background:#fbeaea;color:#8b1a1a;}
+.dept-sasp{background:#e8f5ec;color:#1a5c2a;}
+.dept-admin{background:#fef9e7;color:#7a4c00;}
+
+.status-active{color:var(--green);font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;}
+.status-inactive{color:var(--red);font-size:11px;font-weight:600;display:flex;align-items:center;gap:5px;}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.status-dot.active{background:var(--green);}
+.status-dot.inactive{background:var(--red);}
+
+/* ALERT */
+.alert{padding:12px 16px;border-radius:var(--radius);font-size:13px;line-height:1.5;margin-bottom:16px;display:none;}
+.alert.error{background:var(--red-lt);color:var(--red);border:1px solid rgba(192,57,43,0.2);}
+.alert.success{background:var(--green-lt);color:#1e8449;border:1px solid rgba(39,174,96,0.2);}
+.alert.show{display:block;}
+
+/* TABS */
+.tabs{display:flex;gap:4px;margin-bottom:24px;border-bottom:1px solid var(--gray-2);}
+.tab{
+  padding:10px 18px;font-size:13px;font-weight:500;color:var(--gray-4);
+  border:none;background:none;cursor:pointer;
+  border-bottom:2px solid transparent;margin-bottom:-1px;
+  transition:all .2s;font-family:var(--font-sans);
+}
+.tab:hover{color:var(--navy);}
+.tab.active{color:var(--blue-mid);border-bottom-color:var(--blue-mid);font-weight:600;}
+
+/* MODAL */
+.modal-overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.6);
+  z-index:1000;display:flex;align-items:center;justify-content:center;
+  padding:20px;opacity:0;pointer-events:none;transition:opacity .2s;
+  backdrop-filter:blur(4px);
+}
+.modal-overlay.open{opacity:1;pointer-events:all;}
+.modal{
+  background:var(--white);border-radius:10px;
+  max-width:520px;width:100%;
+  transform:translateY(16px);transition:transform .2s;
+  box-shadow:0 24px 60px rgba(0,0,0,0.3);
+}
+.modal-overlay.open .modal{transform:translateY(0);}
+.modal-head{
+  background:var(--navy);padding:18px 22px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-radius:10px 10px 0 0;
+}
+.modal-head-title{font-family:var(--font-serif);font-size:17px;color:var(--white);font-weight:700;}
+.modal-close{
+  width:30px;height:30px;background:rgba(255,255,255,0.1);
+  border:none;border-radius:4px;color:var(--white);font-size:14px;
+  cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.modal-body{padding:24px;}
+.modal-footer{padding:16px 24px;border-top:1px solid var(--gray-2);display:flex;justify-content:flex-end;gap:10px;}
+
+/* Sections */
+.section{display:none;}
+.section.active{display:block;}
+
+/* Loading */
+.loading-overlay{
+  position:fixed;inset:0;background:rgba(255,255,255,0.8);
+  z-index:9999;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:12px;
+}
+.spinner-lg{
+  width:40px;height:40px;border:3px solid var(--gray-2);
+  border-top-color:var(--blue-mid);border-radius:50%;
+  animation:spin .8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Password strength */
+.pw-strength{height:4px;border-radius:2px;margin-top:6px;background:var(--gray-2);overflow:hidden;}
+.pw-strength-bar{height:100%;border-radius:2px;transition:all .3s;}
+.pw-strength-label{font-size:11px;margin-top:4px;}
+
+/* Activity */
+.activity-item{
+  display:flex;align-items:start;gap:12px;
+  padding:12px 0;border-bottom:1px solid var(--gray-2);
+}
+.activity-item:last-child{border:none;}
+.activity-icon{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;flex-shrink:0;background:var(--gray-1);
+}
+.activity-text{font-size:13px;color:var(--gray-dk);line-height:1.5;}
+.activity-time{font-family:var(--font-mono);font-size:11px;color:var(--gray-3);margin-top:2px;}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner-lg"></div>
+  <span style="font-size:13px;color:var(--gray-3)">Vérification des accès...</span>
+</div>
+
+<!-- NAV -->
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="nav-logo" href="dashboard.html">
+      <div class="seal">DA</div>
+      <div>DOJ <span>Portal</span></div>
+    </a>
+    <div class="nav-right">
+      <span class="admin-badge">⚡ SUPER ADMIN</span>
+      <span class="nav-user" id="nav-user"></span>
+      <button class="logout-btn" onclick="logout()">Déconnexion</button>
+    </div>
+  </div>
+</nav>
+
+<!-- LAYOUT -->
+<div class="layout">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">Administration</div>
+    <button class="sidebar-link active" onclick="showSection('dashboard-section', this)">
+      <span class="icon">🏠</span> Tableau de bord
+    </button>
+    <button class="sidebar-link" onclick="showSection('users-section', this)">
+      <span class="icon">👥</span> Gestion des comptes
+    </button>
+    <button class="sidebar-link" onclick="showSection('create-section', this)">
+      <span class="icon">➕</span> Créer un compte
+    </button>
+
+    <div class="sidebar-section">Système</div>
+    <button class="sidebar-link" onclick="showSection('logs-section', this)">
+      <span class="icon">📋</span> Logs d'activité
+    </button>
+    <button class="sidebar-link" onclick="showSection('channels-section', this)">
+      <span class="icon">💬</span> Canaux de messagerie
+    </button>
+
+    <div class="sidebar-section" style="margin-top:auto;border-top:1px solid var(--gray-2);padding-top:12px;">
+    </div>
+    <a class="sidebar-link" href="dashboard.html">
+      <span class="icon">↩</span> Portail principal
+    </a>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- DASHBOARD SECTION -->
+    <div class="section active" id="dashboard-section">
+      <div class="page-header">
+        <h1 class="page-title">Tableau de bord</h1>
+        <p class="page-sub">Vue d'ensemble du système — San Andreas DOJ Portal</p>
+      </div>
+      <div class="stats-row" id="stats-row">
+        <div class="stat-card"><div class="stat-icon">👥</div><div><div class="stat-num" id="stat-users">—</div><div class="stat-label">Comptes actifs</div></div></div>
+        <div class="stat-card"><div class="stat-icon">📁</div><div><div class="stat-num" id="stat-cases">—</div><div class="stat-label">Dossiers ouverts</div></div></div>
+        <div class="stat-card"><div class="stat-icon">💬</div><div><div class="stat-num" id="stat-messages">—</div><div class="stat-label">Messages (24h)</div></div></div>
+        <div class="stat-card"><div class="stat-icon">🏛️</div><div><div class="stat-num" id="stat-depts">4</div><div class="stat-label">Départements</div></div></div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Activité récente</div>
+        </div>
+        <div id="activity-list"><p style="color:var(--gray-3);font-size:13px">Chargement...</p></div>
+      </div>
+    </div>
+
+    <!-- USERS SECTION -->
+    <div class="section" id="users-section">
+      <div class="page-header">
+        <h1 class="page-title">Gestion des comptes</h1>
+        <p class="page-sub">Tous les membres enregistrés sur le portail</p>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Membres</div>
+          <button class="btn btn-primary" onclick="showSection('create-section', document.querySelector('[onclick*=create-section]'))">
+            ➕ Nouveau compte
+          </button>
+        </div>
+        <div style="margin-bottom:16px;display:flex;gap:10px;align-items:center;">
+          <input type="text" id="search-users" placeholder="Rechercher un membre..." style="max-width:280px;" oninput="filterUsers()"/>
+          <select id="filter-dept" onchange="filterUsers()" style="max-width:160px;">
+            <option value="">Tous les départements</option>
+            <option value="doj">DOJ</option>
+            <option value="cour">Cour</option>
+            <option value="sasp">SASP</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="alert error" id="users-error"></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Membre</th>
+                <th>Rôle</th>
+                <th>Département</th>
+                <th>Badge</th>
+                <th>Statut</th>
+                <th>Dernière connexion</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="users-table">
+              <tr><td colspan="7" style="color:var(--gray-3);text-align:center;padding:24px">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CREATE SECTION -->
+    <div class="section" id="create-section">
+      <div class="page-header">
+        <h1 class="page-title">Créer un compte</h1>
+        <p class="page-sub">Seul le Super Admin peut créer des comptes sur le portail.</p>
+      </div>
+      <div class="card">
+        <div class="alert error" id="create-error"></div>
+        <div class="alert success" id="create-success"></div>
+        <form id="create-form">
+          <div class="form-grid">
+            <div class="field">
+              <label>Prénom *</label>
+              <input type="text" id="c-firstname" required placeholder="Henri"/>
+            </div>
+            <div class="field">
+              <label>Nom *</label>
+              <input type="text" id="c-lastname" required placeholder="Shu"/>
+            </div>
+            <div class="field full">
+              <label>Adresse e-mail *</label>
+              <input type="email" id="c-email" required placeholder="henri.shu@doj-sanandreas.gov"/>
+            </div>
+            <div class="field">
+              <label>Mot de passe temporaire *</label>
+              <input type="password" id="c-password" required placeholder="Min. 8 caractères" oninput="checkPwStrength(this.value)"/>
+              <div class="pw-strength"><div class="pw-strength-bar" id="pw-bar"></div></div>
+              <div class="pw-strength-label" id="pw-label"></div>
+            </div>
+            <div class="field">
+              <label>Numéro de badge</label>
+              <input type="text" id="c-badge" placeholder="DOJ-0042"/>
+            </div>
+            <div class="field">
+              <label>Département *</label>
+              <select id="c-dept" required onchange="updateRoles()">
+                <option value="">— Sélectionner —</option>
+                <option value="doj">DOJ (Department of Justice)</option>
+                <option value="cour">Cour (Tribunal)</option>
+                <option value="sasp">SASP (Police)</option>
+                <option value="admin">Administration</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Rôle *</label>
+              <select id="c-role" required>
+                <option value="">— Choisir un département d'abord —</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Couleur d'avatar</label>
+              <input type="color" id="c-color" value="#2251a3" style="width:100%;height:42px;padding:4px;border:1.5px solid var(--gray-2);border-radius:var(--radius);cursor:pointer;"/>
+            </div>
+          </div>
+          <div style="margin-top:20px;display:flex;gap:10px;">
+            <button type="submit" class="btn btn-primary" id="create-btn">✅ Créer le compte</button>
+            <button type="reset" class="btn" style="background:var(--gray-2);color:var(--gray-dk);" onclick="resetCreateForm()">Réinitialiser</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- LOGS SECTION -->
+    <div class="section" id="logs-section">
+      <div class="page-header">
+        <h1 class="page-title">Logs d'activité</h1>
+        <p class="page-sub">Historique des actions sur le portail</p>
+      </div>
+      <div class="card">
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Utilisateur</th><th>Action</th><th>Cible</th></tr></thead>
+            <tbody id="logs-table">
+              <tr><td colspan="4" style="color:var(--gray-3);text-align:center;padding:24px">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- CHANNELS SECTION -->
+    <div class="section" id="channels-section">
+      <div class="page-header">
+        <h1 class="page-title">Canaux de messagerie</h1>
+        <p class="page-sub">Gérer les canaux disponibles sur le portail</p>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">Canaux actifs</div>
+          <button class="btn btn-primary btn-sm" onclick="openChannelModal()">➕ Nouveau canal</button>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Nom</th><th>Type</th><th>Département</th><th>Description</th></tr></thead>
+            <tbody id="channels-table">
+              <tr><td colspan="4" style="color:var(--gray-3);text-align:center;padding:24px">Chargement...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- MODAL EDIT USER -->
+<div class="modal-overlay" id="edit-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-title">✏️ Modifier le compte</div>
+      <button class="modal-close" onclick="closeModal('edit-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert error" id="edit-error"></div>
+      <div class="alert success" id="edit-success"></div>
+      <input type="hidden" id="edit-id"/>
+      <div class="form-grid">
+        <div class="field"><label>Prénom</label><input type="text" id="edit-firstname"/></div>
+        <div class="field"><label>Nom</label><input type="text" id="edit-lastname"/></div>
+        <div class="field"><label>Badge</label><input type="text" id="edit-badge"/></div>
+        <div class="field"><label>Département</label>
+          <select id="edit-dept" onchange="updateEditRoles()">
+            <option value="doj">DOJ</option>
+            <option value="cour">Cour</option>
+            <option value="sasp">SASP</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <div class="field full"><label>Rôle</label><select id="edit-role"></select></div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--gray-2);color:var(--gray-dk);" onclick="closeModal('edit-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="saveEdit()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CHANNEL -->
+<div class="modal-overlay" id="channel-modal">
+  <div class="modal">
+    <div class="modal-head">
+      <div class="modal-head-title">💬 Nouveau canal</div>
+      <button class="modal-close" onclick="closeModal('channel-modal')">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="alert error" id="channel-error"></div>
+      <div class="field" style="margin-bottom:14px"><label>Nom du canal</label><input type="text" id="ch-name" placeholder="ex: DOJ — Pénal"/></div>
+      <div class="field" style="margin-bottom:14px"><label>Description</label><input type="text" id="ch-desc" placeholder="Description courte"/></div>
+      <div class="field" style="margin-bottom:14px"><label>Type</label>
+        <select id="ch-type">
+          <option value="public">Public (tous les membres)</option>
+          <option value="departmental">Départemental</option>
+          <option value="private">Privé</option>
+        </select>
+      </div>
+      <div class="field"><label>Département</label>
+        <select id="ch-dept">
+          <option value="all">Tous</option>
+          <option value="doj">DOJ</option>
+          <option value="cour">Cour</option>
+          <option value="sasp">SASP</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn" style="background:var(--gray-2);color:var(--gray-dk);" onclick="closeModal('channel-modal')">Annuler</button>
+      <button class="btn btn-primary" onclick="createChannel()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://qwdpiskikxsalwgjyqvr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3ZHBpc2tpa3hzYWx3Z2p5cXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NjM0NDYsImV4cCI6MjA5NTEzOTQ0Nn0.y6DSLGU3qnl-ucJITTg70eEqG7yV97W77OKMT5E9RRY';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const ROLES = {
+  doj: [
+    {value:'ag', label:'Procureur Général (AG)'},
+    {value:'procureur_doj', label:'Procureur DOJ'},
+    {value:'ada', label:'Assistant District Attorney (ADA)'},
+    {value:'coordinateur_doj', label:'Coordinateur DOJ'},
+    {value:'assistant_juridique', label:'Assistant Juridique'},
+    {value:'stagiaire_doj', label:'Stagiaire DOJ'},
+  ],
+  cour: [
+    {value:'president_cour', label:'Président de la Cour'},
+    {value:'juge_en_chef', label:'Juge en Chef'},
+    {value:'juge', label:'Juge'},
+    {value:'avocat_commis', label:'Avocat Commis d\'Office'},
+  ],
+  sasp: [
+    {value:'sasp', label:'SASP — Agent'},
+  ],
+  admin: [
+    {value:'super_admin', label:'Super Administrateur'},
+  ]
+};
+
+const ROLE_LABELS = {
+  super_admin:'Super Admin', ag:'Procureur Général', procureur_doj:'Procureur DOJ',
+  ada:'ADA', coordinateur_doj:'Coordinateur DOJ', assistant_juridique:'Assistant Juridique',
+  stagiaire_doj:'Stagiaire DOJ', president_cour:'Président de la Cour',
+  juge_en_chef:'Juge en Chef', juge:'Juge', avocat_commis:'Avocat Commis d\'Office', sasp:'SASP'
+};
+
+const DEPT_CLASS = {doj:'dept-doj',cour:'dept-cour',sasp:'dept-sasp',admin:'dept-admin'};
+
+let allUsers = [];
+
+// INIT
+(async () => {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+
+  const { data: profile } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+  if (!profile || profile.role !== 'super_admin') {
+    alert('Accès refusé.');
+    window.location.href = 'dashboard.html';
+    return;
+  }
+
+  document.getElementById('nav-user').textContent = profile.full_name;
+  document.getElementById('loading').style.display = 'none';
+
+  loadStats();
+  loadUsers();
+  loadLogs();
+  loadChannels();
+})();
+
+async function loadStats() {
+  const [u, c, m] = await Promise.all([
+    sb.from('profiles').select('id', {count:'exact'}).eq('is_active', true),
+    sb.from('cases').select('id', {count:'exact'}).neq('status','clos'),
+    sb.from('messages').select('id', {count:'exact'}).gte('created_at', new Date(Date.now()-86400000).toISOString()),
+  ]);
+  document.getElementById('stat-users').textContent = u.count ?? 0;
+  document.getElementById('stat-cases').textContent = c.count ?? 0;
+  document.getElementById('stat-messages').textContent = m.count ?? 0;
+}
+
+async function loadUsers() {
+  const { data, error } = await sb.from('profiles').select('*').order('created_at', {ascending:false});
+  if (error) { document.getElementById('users-error').textContent = error.message; return; }
+  allUsers = data || [];
+  renderUsers(allUsers);
+  renderActivityFromUsers(allUsers);
+}
+
+function renderUsers(users) {
+  const tbody = document.getElementById('users-table');
+  if (!users.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="color:var(--gray-3);text-align:center;padding:24px">Aucun membre trouvé</td></tr>';
+    return;
+  }
+  tbody.innerHTML = users.map(u => `
+    <tr>
+      <td>
+        <div style="display:flex;align-items:center;gap:10px;">
+          <div style="width:32px;height:32px;border-radius:50%;background:${u.avatar_color||'#2251a3'};display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;flex-shrink:0;">
+            ${u.full_name.charAt(0)}
+          </div>
+          <div>
+            <div style="font-weight:600;font-size:13px;">${u.full_name}</div>
+            <div style="font-size:11px;color:var(--gray-3);font-family:var(--font-mono);">${u.email}</div>
+          </div>
+        </div>
+      </td>
+      <td><span class="role-badge ${DEPT_CLASS[u.department]||''}">${ROLE_LABELS[u.role]||u.role}</span></td>
+      <td><span style="font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--gray-4)">${u.department}</span></td>
+      <td><span style="font-family:var(--font-mono);font-size:12px;">${u.badge_number||'—'}</span></td>
+      <td>
+        <span class="${u.is_active?'status-active':'status-inactive'}">
+          <span class="status-dot ${u.is_active?'active':'inactive'}"></span>
+          ${u.is_active?'Actif':'Inactif'}
+        </span>
+      </td>
+      <td style="font-size:12px;color:var(--gray-3);font-family:var(--font-mono)">
+        ${u.last_seen ? new Date(u.last_seen).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}) : 'Jamais'}
+      </td>
+      <td>
+        <div style="display:flex;gap:6px;">
+          <button class="btn btn-sm" style="background:var(--blue-lt);color:var(--blue-mid);" onclick="openEdit('${u.id}')">✏️</button>
+          <button class="btn btn-sm ${u.is_active?'btn-danger':'btn-success'}" onclick="toggleActive('${u.id}',${u.is_active})">
+            ${u.is_active?'🔒 Désactiver':'🔓 Activer'}
+          </button>
+        </div>
+      </td>
+    </tr>
+  `).join('');
+}
+
+function filterUsers() {
+  const q = document.getElementById('search-users').value.toLowerCase();
+  const dept = document.getElementById('filter-dept').value;
+  const filtered = allUsers.filter(u =>
+    (!q || u.full_name.toLowerCase().includes(q) || u.email.toLowerCase().includes(q))
+    && (!dept || u.department === dept)
+  );
+  renderUsers(filtered);
+}
+
+function renderActivityFromUsers(users) {
+  const list = document.getElementById('activity-list');
+  if (!users.length) { list.innerHTML = '<p style="color:var(--gray-3);font-size:13px">Aucune activité récente</p>'; return; }
+  list.innerHTML = users.slice(0,5).map(u => `
+    <div class="activity-item">
+      <div class="activity-icon" style="background:${u.avatar_color||'#2251a3'}1a;">👤</div>
+      <div>
+        <div class="activity-text"><strong>${u.full_name}</strong> — Compte créé (${ROLE_LABELS[u.role]||u.role})</div>
+        <div class="activity-time">${new Date(u.created_at).toLocaleDateString('fr-FR',{day:'2-digit',month:'2-digit',year:'numeric'})}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+// CREATE ACCOUNT
+function updateRoles() {
+  const dept = document.getElementById('c-dept').value;
+  const sel = document.getElementById('c-role');
+  sel.innerHTML = dept && ROLES[dept]
+    ? ROLES[dept].map(r => `<option value="${r.value}">${r.label}</option>`).join('')
+    : '<option value="">— Choisir un département d\'abord —</option>';
+}
+
+function checkPwStrength(pw) {
+  const bar = document.getElementById('pw-bar');
+  const label = document.getElementById('pw-label');
+  let score = 0;
+  if (pw.length >= 8) score++;
+  if (/[A-Z]/.test(pw)) score++;
+  if (/[0-9]/.test(pw)) score++;
+  if (/[^A-Za-z0-9]/.test(pw)) score++;
+  const colors = ['#e74c3c','#e67e22','#f1c40f','#27ae60'];
+  const labels = ['Très faible','Faible','Correct','Fort'];
+  bar.style.width = `${(score/4)*100}%`;
+  bar.style.background = colors[score-1]||'var(--gray-2)';
+  label.textContent = score > 0 ? labels[score-1] : '';
+  label.style.color = colors[score-1]||'var(--gray-3)';
+}
+
+document.getElementById('create-form').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const btn = document.getElementById('create-btn');
+  btn.disabled = true;
+  btn.textContent = 'Création en cours...';
+  hideAlerts('create');
+
+  const firstName = document.getElementById('c-firstname').value.trim();
+  const lastName = document.getElementById('c-lastname').value.trim();
+  const email = document.getElementById('c-email').value.trim();
+  const password = document.getElementById('c-password').value;
+  const badge = document.getElementById('c-badge').value.trim();
+  const dept = document.getElementById('c-dept').value;
+  const role = document.getElementById('c-role').value;
+  const color = document.getElementById('c-color').value;
+
+  try {
+    if (password.length < 8) throw new Error('Le mot de passe doit contenir au moins 8 caractères.');
+    if (!dept || !role) throw new Error('Veuillez sélectionner un département et un rôle.');
+
+    // Create auth user
+    const { data: authData, error: authError } = await sb.auth.admin
+      ? await createAuthUser(email, password)
+      : await sb.auth.signUp({ email, password });
+
+    if (authError) throw authError;
+
+    // Wait a moment for the user to be created
+    await new Promise(r => setTimeout(r, 500));
+
+    // We need to use the service role for this - using a workaround
+    // The profile will be inserted directly
+    const userId = authData.user?.id;
+    if (!userId) throw new Error('Erreur lors de la création du compte utilisateur.');
+
+    const { error: profileError } = await sb.from('profiles').insert({
+      id: userId,
+      email,
+      full_name: `${firstName} ${lastName}`,
+      badge_number: badge || null,
+      role,
+      department: dept,
+      avatar_color: color,
+      is_active: true,
+    });
+
+    if (profileError) throw profileError;
+
+    // Log
+    await sb.from('activity_logs').insert({
+      action: 'create_account',
+      target: email,
+      metadata: { role, department: dept, full_name: `${firstName} ${lastName}` }
+    });
+
+    showAlert('create', 'success', `✅ Compte créé avec succès pour ${firstName} ${lastName}. Identifiants : ${email} / mot de passe temporaire fourni.`);
+    document.getElementById('create-form').reset();
+    loadUsers();
+
+  } catch (err) {
+    showAlert('create', 'error', err.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = '✅ Créer le compte';
+});
+
+async function createAuthUser(email, password) {
+  // Use signUp since we don't have admin access from anon key
+  return await sb.auth.signUp({ email, password, options: { emailRedirectTo: window.location.origin } });
+}
+
+// EDIT USER
+function openEdit(userId) {
+  const u = allUsers.find(u => u.id === userId);
+  if (!u) return;
+  document.getElementById('edit-id').value = u.id;
+  const [fn, ...ln] = u.full_name.split(' ');
+  document.getElementById('edit-firstname').value = fn;
+  document.getElementById('edit-lastname').value = ln.join(' ');
+  document.getElementById('edit-badge').value = u.badge_number || '';
+  document.getElementById('edit-dept').value = u.department;
+  updateEditRoles();
+  setTimeout(() => document.getElementById('edit-role').value = u.role, 50);
+  openModal('edit-modal');
+}
+
+function updateEditRoles() {
+  const dept = document.getElementById('edit-dept').value;
+  const sel = document.getElementById('edit-role');
+  sel.innerHTML = ROLES[dept] ? ROLES[dept].map(r => `<option value="${r.value}">${r.label}</option>`).join('') : '';
+}
+
+async function saveEdit() {
+  const id = document.getElementById('edit-id').value;
+  const fn = document.getElementById('edit-firstname').value.trim();
+  const ln = document.getElementById('edit-lastname').value.trim();
+  const badge = document.getElementById('edit-badge').value.trim();
+  const dept = document.getElementById('edit-dept').value;
+  const role = document.getElementById('edit-role').value;
+
+  const { error } = await sb.from('profiles').update({
+    full_name: `${fn} ${ln}`,
+    badge_number: badge || null,
+    department: dept,
+    role
+  }).eq('id', id);
+
+  if (error) { showAlert('edit', 'error', error.message); return; }
+  showAlert('edit', 'success', 'Modifications enregistrées.');
+  loadUsers();
+  setTimeout(() => closeModal('edit-modal'), 1200);
+}
+
+async function toggleActive(userId, isActive) {
+  const u = allUsers.find(u => u.id === userId);
+  const action = isActive ? 'désactiver' : 'activer';
+  if (!confirm(`Voulez-vous ${action} le compte de ${u?.full_name} ?`)) return;
+
+  const { error } = await sb.from('profiles').update({ is_active: !isActive }).eq('id', userId);
+  if (!error) loadUsers();
+}
+
+// LOGS
+async function loadLogs() {
+  const { data } = await sb.from('activity_logs').select('*').order('created_at', {ascending:false}).limit(50);
+  const tbody = document.getElementById('logs-table');
+  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--gray-3);text-align:center;padding:24px">Aucun log disponible</td></tr>'; return; }
+  tbody.innerHTML = data.map(l => `
+    <tr>
+      <td style="font-family:var(--font-mono);font-size:11px;">${new Date(l.created_at).toLocaleString('fr-FR')}</td>
+      <td style="font-size:12px;">${l.user_id||'Système'}</td>
+      <td><span style="font-family:var(--font-mono);font-size:11px;background:var(--gray-2);padding:2px 6px;border-radius:3px;">${l.action}</span></td>
+      <td style="font-size:12px;">${l.target||'—'}</td>
+    </tr>
+  `).join('');
+}
+
+// CHANNELS
+async function loadChannels() {
+  const { data } = await sb.from('channels').select('*').order('created_at');
+  const tbody = document.getElementById('channels-table');
+  if (!data?.length) { tbody.innerHTML = '<tr><td colspan="4" style="color:var(--gray-3);text-align:center;padding:24px">Aucun canal</td></tr>'; return; }
+  tbody.innerHTML = data.map(c => `
+    <tr>
+      <td style="font-weight:600;">${c.name}</td>
+      <td><span class="role-badge dept-doj">${c.type}</span></td>
+      <td>${c.department||'—'}</td>
+      <td style="color:var(--gray-4);font-size:13px;">${c.description||'—'}</td>
+    </tr>
+  `).join('');
+}
+
+function openChannelModal() { openModal('channel-modal'); }
+
+async function createChannel() {
+  const name = document.getElementById('ch-name').value.trim();
+  const desc = document.getElementById('ch-desc').value.trim();
+  const type = document.getElementById('ch-type').value;
+  const dept = document.getElementById('ch-dept').value;
+
+  if (!name) { showAlert('channel','error','Nom requis.'); return; }
+  const { error } = await sb.from('channels').insert({ name, description: desc, type, department: dept });
+  if (error) { showAlert('channel','error',error.message); return; }
+  closeModal('channel-modal');
+  loadChannels();
+}
+
+// UTILS
+function showSection(id, el) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  document.querySelectorAll('.sidebar-link').forEach(l => l.classList.remove('active'));
+  if (el) el.classList.add('active');
+}
+
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+function showAlert(prefix, type, msg) {
+  const el = document.getElementById(`${prefix}-${type}`);
+  if (!el) return;
+  el.textContent = msg;
+  el.classList.add('show');
+  if (type === 'success') setTimeout(() => el.classList.remove('show'), 4000);
+}
+
+function hideAlerts(prefix) {
+  ['error','success'].forEach(t => {
+    const el = document.getElementById(`${prefix}-${t}`);
+    if (el) el.classList.remove('show');
+  });
+}
+
+function resetCreateForm() {
+  document.getElementById('c-role').innerHTML = '<option value="">— Choisir un département d\'abord —</option>';
+  document.getElementById('pw-bar').style.width = '0';
+  document.getElementById('pw-label').textContent = '';
+}
+
+async function logout() {
+  await sb.auth.signOut();
+  sessionStorage.removeItem('doj_profile');
+  window.location.href = 'index.html';
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') document.querySelectorAll('.modal-overlay').forEach(m => m.classList.remove('open'));
+});
+</script>
+</body>
+</html>
