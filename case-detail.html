@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DOJ Portal — Dossier</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy-mid:#112240;--blue:#1a3a6e;--blue-mid:#2251a3;--blue-lt:#E8F0FA;
+  --gold:#c9a84c;--gold-lt:#e8c96a;--gold-dim:rgba(201,168,76,0.12);
+  --white:#ffffff;--gray-1:#f8f8f6;--gray-2:#ebebeb;--gray-3:#aaaaaa;--gray-4:#666;--gray-dk:#1a1a1a;
+  --red:#c0392b;--red-lt:#fdeaea;--green:#27ae60;--green-lt:#eafaf1;--orange:#e67e22;--orange-lt:#fef5e7;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:'Libre Franklin',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --radius:6px;--shadow:0 2px 16px rgba(0,0,0,0.07);--shadow-lg:0 8px 40px rgba(0,0,0,0.14);
+}
+html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);color:var(--gray-dk);}
+.topbar{background:var(--navy);font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.4);padding:5px 24px;display:flex;justify-content:space-between;}
+.topnav{background:var(--navy-mid);border-bottom:1px solid rgba(201,168,76,0.25);position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.topnav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:10px;height:56px;}
+.nav-logo{font-family:var(--font-serif);font-size:15px;color:var(--white);font-weight:700;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo .seal{width:30px;height:30px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold);font-weight:900;}
+.nav-logo span{color:var(--gold);}
+.back-btn{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:var(--radius);transition:all .2s;}
+.back-btn:hover{color:white;background:rgba(255,255,255,0.08);}
+.page{max-width:1200px;margin:0 auto;padding:28px 24px;}
+.page-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:24px;gap:16px;}
+.case-num-label{font-family:var(--font-mono);font-size:12px;color:var(--gold);letter-spacing:.08em;margin-bottom:6px;}
+.case-title-h{font-family:var(--font-serif);font-size:28px;font-weight:700;color:var(--navy);line-height:1.2;}
+.case-meta-row{display:flex;align-items:center;gap:12px;margin-top:8px;flex-wrap:wrap;}
+.status-pill{font-size:11px;padding:4px 11px;border-radius:20px;font-weight:600;white-space:nowrap;font-family:var(--font-mono);}
+.s-ouvert{background:#e8f0fa;color:#1a3a6e;}
+.s-instruction{background:var(--orange-lt);color:var(--orange);}
+.s-audience{background:var(--gold-dim);color:#8a6a1a;}
+.s-jugement{background:var(--red-lt);color:var(--red);}
+.s-clos{background:var(--green-lt);color:var(--green);}
+.s-classe{background:var(--gray-2);color:var(--gray-4);}
+.priority-badge{font-size:11px;padding:3px 9px;border-radius:4px;font-family:var(--font-mono);font-weight:600;}
+.p-urgente{background:#fdeaea;color:var(--red);}
+.p-haute{background:var(--orange-lt);color:var(--orange);}
+.p-normal{background:var(--blue-lt);color:var(--blue-mid);}
+.p-basse{background:var(--gray-2);color:var(--gray-4);}
+.header-actions{display:flex;gap:8px;align-items:flex-start;flex-shrink:0;flex-wrap:wrap;}
+.btn{padding:9px 16px;border-radius:var(--radius);font-family:var(--font-sans);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:7px;}
+.btn-primary{background:var(--navy);color:var(--white);}
+.btn-primary:hover{background:var(--blue);}
+.btn-outline{background:transparent;border:1.5px solid var(--gray-2);color:var(--gray-dk);}
+.btn-outline:hover{border-color:var(--blue-mid);color:var(--blue-mid);}
+.btn-sm{padding:6px 12px;font-size:12px;}
+.btn-gold{background:var(--gold);color:var(--navy);}
+.btn-gold:hover{background:var(--gold-lt);}
+.btn-red{background:var(--red-lt);color:var(--red);border:1.5px solid rgba(192,57,43,0.2);}
+.btn-red:hover{background:var(--red);color:white;}
+
+.grid-2{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;}
+.card{background:var(--white);border:1px solid var(--gray-2);border-radius:8px;padding:20px;margin-bottom:16px;}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;padding-bottom:12px;border-bottom:1px solid var(--gray-2);}
+.card-title{font-family:var(--font-serif);font-size:16px;font-weight:700;color:var(--navy);}
+label{display:block;font-size:11px;font-weight:600;color:var(--navy);margin-bottom:5px;text-transform:uppercase;letter-spacing:.06em;}
+select,input[type=text],textarea{width:100%;padding:9px 12px;border:1.5px solid var(--gray-2);border-radius:var(--radius);font-family:var(--font-sans);font-size:13.5px;color:var(--gray-dk);background:var(--gray-1);transition:border-color .2s;outline:none;}
+select:focus,input:focus,textarea:focus{border-color:var(--blue-mid);box-shadow:0 0 0 3px rgba(34,81,163,0.08);background:var(--white);}
+textarea{resize:vertical;min-height:80px;}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.meta-item label{margin-bottom:4px;}
+.meta-val{font-size:14px;font-weight:600;color:var(--gray-dk);}
+.meta-val.mono{font-family:var(--font-mono);}
+
+/* CHARGES */
+.charge-tag{display:inline-flex;align-items:center;gap:6px;padding:5px 12px;background:var(--blue-lt);color:var(--blue-mid);border-radius:20px;font-size:12px;font-weight:600;font-family:var(--font-mono);margin:3px;}
+
+/* TIMELINE */
+.timeline{position:relative;padding-left:24px;}
+.timeline::before{content:'';position:absolute;left:7px;top:0;bottom:0;width:2px;background:var(--gray-2);}
+.tl-item{position:relative;margin-bottom:16px;}
+.tl-dot{position:absolute;left:-20px;top:4px;width:12px;height:12px;border-radius:50%;border:2px solid var(--white);box-shadow:0 0 0 2px var(--gray-2);}
+.tl-dot.action-status_changed{background:var(--blue-mid);}
+.tl-dot.action-document_added{background:var(--gold);}
+.tl-dot.action-judge_assigned,.tl-dot.action-ada_assigned{background:var(--green);}
+.tl-dot.action-note_added{background:var(--orange);}
+.tl-dot.action-created{background:var(--navy);}
+.tl-dot.action-default{background:var(--gray-3);}
+.tl-time{font-family:var(--font-mono);font-size:10px;color:var(--gray-3);margin-bottom:3px;}
+.tl-action{font-size:13px;font-weight:600;color:var(--navy);}
+.tl-detail{font-size:12px;color:var(--gray-4);margin-top:2px;}
+.tl-by{font-family:var(--font-mono);font-size:10px;color:var(--gray-3);margin-top:2px;}
+
+/* DOCUMENTS */
+.doc-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--gray-2);}
+.doc-item:last-child{border:none;}
+.doc-icon{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.doc-type-plea_deal{background:var(--blue-lt);}
+.doc-type-acte_accusation{background:var(--red-lt);}
+.doc-type-mandat{background:var(--gold-dim);}
+.doc-type-autre{background:var(--gray-2);}
+.doc-name{font-size:13px;font-weight:600;color:var(--navy);}
+.doc-meta{font-size:11px;color:var(--gray-3);margin-top:2px;font-family:var(--font-mono);}
+
+/* NOTE FORM */
+.note-form{display:flex;gap:8px;align-items:flex-end;margin-top:12px;}
+.note-form textarea{min-height:56px;font-size:13px;}
+
+/* ASSIGNATION */
+.assignee-display{display:flex;align-items:center;gap:10px;padding:10px 0;}
+.assignee-avatar{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;flex-shrink:0;}
+.assignee-name{font-size:13px;font-weight:600;color:var(--navy);}
+.assignee-role{font-size:11px;color:var(--gray-3);font-family:var(--font-mono);}
+
+.alert{padding:11px 15px;border-radius:var(--radius);font-size:13px;margin-bottom:12px;display:none;}
+.alert.error{background:var(--red-lt);color:var(--red);}
+.alert.success{background:var(--green-lt);color:#1e8449;}
+.alert.show{display:block;}
+.loading-overlay{position:fixed;inset:0;background:rgba(255,255,255,.9);z-index:9999;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;}
+.spinner{width:38px;height:38px;border:3px solid var(--gray-2);border-top-color:var(--blue-mid);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+@media(max-width:900px){.grid-2{grid-template-columns:1fr;}}
+</style>
+</head>
+<body>
+
+<div class="loading-overlay" id="loading">
+  <div class="spinner"></div>
+  <span style="font-size:13px;color:var(--gray-3)">Chargement du dossier...</span>
+</div>
+
+<div class="topbar">
+  <span>DOJ PORTAL — SAN ANDREAS // PORTAIL SÉCURISÉ</span>
+  <span id="clock"></span>
+</div>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="nav-logo" href="dashboard.html">
+      <div class="seal">DA</div>
+      <div>DOJ <span>Portal</span></div>
+    </a>
+    <a class="back-btn" href="dashboard.html">← Dossiers</a>
+    <span style="color:rgba(255,255,255,0.3);font-size:13px" id="nav-case-num"></span>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="alert error" id="page-error"></div>
+
+  <!-- HEADER -->
+  <div class="page-header">
+    <div>
+      <div class="case-num-label" id="h-case-num">—</div>
+      <div class="case-title-h" id="h-title">Chargement...</div>
+      <div class="case-meta-row">
+        <span class="status-pill" id="h-status">—</span>
+        <span class="priority-badge" id="h-priority">—</span>
+        <span style="font-size:12px;color:var(--gray-3)">Créé le <span id="h-created">—</span></span>
+        <span style="font-size:12px;color:var(--gray-3)">Modifié le <span id="h-updated">—</span></span>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-gold btn-sm" onclick="openStatusModal()">📋 Changer statut</button>
+      <a href="#" class="btn btn-primary btn-sm" id="gen-plea-btn" style="display:none">📄 Plea Deal</a>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <!-- COLONNE PRINCIPALE -->
+    <div>
+
+      <!-- INFO GÉNÉRALES -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📋 Informations générales</div>
+        </div>
+        <div class="meta-grid">
+          <div class="meta-item"><label>Défendeur</label><div class="meta-val" id="d-defendant">—</div></div>
+          <div class="meta-item"><label>Catégorie</label><div class="meta-val" id="d-category">—</div></div>
+          <div class="meta-item"><label>Date d'audience</label><div class="meta-val" id="d-trial">—</div></div>
+          <div class="meta-item"><label>Verdict</label><div class="meta-val" id="d-verdict">—</div></div>
+        </div>
+        <div style="margin-top:14px"><label>Description / Faits</label><div style="font-size:13.5px;line-height:1.7;color:var(--gray-dk);white-space:pre-wrap" id="d-description">—</div></div>
+      </div>
+
+      <!-- CHARGES -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚖️ Charges retenues</div>
+        </div>
+        <div id="d-charges"><span style="color:var(--gray-3);font-size:13px">Aucune charge.</span></div>
+      </div>
+
+      <!-- DOCUMENTS -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📄 Documents liés</div>
+          <a id="add-doc-btn" href="#" class="btn btn-sm btn-outline" style="display:none">＋ Générer un document</a>
+        </div>
+        <div id="d-documents"><p style="color:var(--gray-3);font-size:13px">Aucun document.</p></div>
+      </div>
+
+      <!-- NOTES INTERNES -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">📝 Notes internes</div>
+        </div>
+        <div id="d-notes"><p style="color:var(--gray-3);font-size:13px">Aucune note.</p></div>
+        <div class="note-form" id="note-form" style="display:none">
+          <textarea id="note-input" placeholder="Ajouter une note interne..." rows="2"></textarea>
+          <button class="btn btn-primary btn-sm" onclick="addNote()" style="flex-shrink:0;height:fit-content">Ajouter</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- COLONNE DROITE -->
+    <div>
+
+      <!-- STATUT (éditable) -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🔄 Statut du dossier</div>
+        </div>
+        <div id="status-edit-form" style="display:none">
+          <div style="margin-bottom:12px">
+            <label>Nouveau statut</label>
+            <select id="new-status">
+              <option value="ouvert">Ouvert</option>
+              <option value="instruction">En instruction</option>
+              <option value="audience">Audience fixée</option>
+              <option value="jugement">En jugement</option>
+              <option value="clos">Clos (condamné)</option>
+              <option value="classe">Classé sans suite</option>
+            </select>
+          </div>
+          <div style="margin-bottom:12px">
+            <label>Note de changement (optionnel)</label>
+            <textarea id="status-note" placeholder="Raison du changement..." rows="2"></textarea>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="btn btn-primary btn-sm" onclick="changeStatus()">Confirmer</button>
+            <button class="btn btn-outline btn-sm" onclick="closeStatusModal()">Annuler</button>
+          </div>
+          <div class="alert error" id="status-error" style="margin-top:8px"></div>
+        </div>
+        <div id="status-display">
+          <div class="assignee-display">
+            <span class="status-pill" id="side-status">—</span>
+            <span style="font-size:12px;color:var(--gray-3)" id="side-status-date">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSIGNATION ADA -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">👤 ADA assigné</div>
+          <button class="btn btn-outline btn-sm" id="assign-ada-btn" onclick="toggleAssignForm('ada')" style="display:none">Modifier</button>
+        </div>
+        <div id="ada-display" class="assignee-display">
+          <div style="color:var(--gray-3);font-size:13px">Non assigné</div>
+        </div>
+        <div id="ada-form" style="display:none;margin-top:10px">
+          <label>Sélectionner un ADA</label>
+          <select id="ada-select"><option value="">— Non assigné —</option></select>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-primary btn-sm" onclick="assignPerson('ada')">Confirmer</button>
+            <button class="btn btn-outline btn-sm" onclick="toggleAssignForm('ada')">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ASSIGNATION JUGE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚖️ Juge assigné</div>
+          <button class="btn btn-outline btn-sm" id="assign-judge-btn" onclick="toggleAssignForm('judge')" style="display:none">Modifier</button>
+        </div>
+        <div id="judge-display" class="assignee-display">
+          <div style="color:var(--gray-3);font-size:13px">Non assigné</div>
+        </div>
+        <div id="judge-form" style="display:none;margin-top:10px">
+          <label>Sélectionner un juge</label>
+          <select id="judge-select"><option value="">— Non assigné —</option></select>
+          <div style="display:flex;gap:8px;margin-top:10px">
+            <button class="btn btn-primary btn-sm" onclick="assignPerson('judge')">Confirmer</button>
+            <button class="btn btn-outline btn-sm" onclick="toggleAssignForm('judge')">Annuler</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- TIMELINE -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🕐 Historique</div>
+        </div>
+        <div class="timeline" id="timeline">
+          <p style="color:var(--gray-3);font-size:13px">Chargement...</p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+const SUPABASE_URL = 'https://qwdpiskikxsalwgjyqvr.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3ZHBpc2tpa3hzYWx3Z2p5cXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NjM0NDYsImV4cCI6MjA5NTEzOTQ0Nn0.y6DSLGU3qnl-ucJITTg70eEqG7yV97W77OKMT5E9RRY';
+const { createClient } = supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const ROLE_LABELS = {
+  super_admin:'Super Admin', ag:'Procureur Général', procureur_doj:'Procureur DOJ',
+  ada:'Assistant DA', coordinateur_doj:'Coordinateur DOJ',
+  assistant_juridique:'Assistant Juridique', stagiaire_doj:'Stagiaire DOJ',
+  president_cour:'Président de la Cour', juge_en_chef:'Juge en Chef',
+  juge:'Juge', avocat_commis:'Avocat Commis', sasp:'Agent SASP'
+};
+const CAT_LABELS = {homicide:'Homicide',trafic:'Trafic de stupéfiants',braquage:'Braquage',crime_organise:'Crime organisé',corruption:'Corruption',fraude:'Fraude',agression:'Agression',autre:'Autre'};
+const CAN_EDIT = ['super_admin','ag','procureur_doj','ada'];
+const CAN_ASSIGN_JUDGE = ['super_admin','ag','president_cour','juge_en_chef'];
+
+let profile = null;
+let caseData = null;
+let caseId = null;
+
+// Get case ID from URL
+const params = new URLSearchParams(window.location.search);
+caseId = params.get('id');
+
+(async () => {
+  if (!caseId) { showError('Aucun dossier spécifié.'); return; }
+
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+
+  const cached = sessionStorage.getItem('doj_profile');
+  if (cached) profile = JSON.parse(cached);
+  else {
+    const { data } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    profile = data;
+  }
+  if (!profile) { window.location.href = 'index.html'; return; }
+
+  await Promise.all([loadCase(), loadHistory(), loadDocuments(), loadProfiles()]);
+
+  document.getElementById('loading').style.display = 'none';
+
+  setInterval(() => {
+    const el = document.getElementById('clock');
+    if (el) el.textContent = new Date().toLocaleTimeString('fr-FR');
+  }, 1000);
+})();
+
+async function loadCase() {
+  const { data, error } = await sb.from('cases').select('*').eq('id', caseId).single();
+  if (error || !data) { showError('Dossier introuvable.'); return; }
+  caseData = data;
+  renderCase(data);
+}
+
+function renderCase(c) {
+  document.title = `DOJ Portal — ${c.case_number}`;
+  document.getElementById('nav-case-num').textContent = c.case_number;
+  document.getElementById('h-case-num').textContent = c.case_number;
+  document.getElementById('h-title').textContent = c.title;
+
+  const statusEl = document.getElementById('h-status');
+  statusEl.textContent = c.status;
+  statusEl.className = `status-pill s-${c.status}`;
+
+  const prioEl = document.getElementById('h-priority');
+  prioEl.textContent = c.priority || 'normal';
+  prioEl.className = `priority-badge p-${c.priority||'normal'}`;
+
+  document.getElementById('h-created').textContent = new Date(c.created_at).toLocaleDateString('fr-FR');
+  document.getElementById('h-updated').textContent = new Date(c.updated_at).toLocaleDateString('fr-FR');
+  document.getElementById('d-defendant').textContent = c.defendant_name || 'Non renseigné';
+  document.getElementById('d-category').textContent = CAT_LABELS[c.category] || c.category || '—';
+  document.getElementById('d-trial').textContent = c.trial_date ? new Date(c.trial_date).toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Non fixée';
+  document.getElementById('d-verdict').textContent = c.verdict || 'En attente';
+  document.getElementById('d-description').textContent = c.description || 'Aucune description.';
+  document.getElementById('side-status').textContent = c.status;
+  document.getElementById('side-status').className = `status-pill s-${c.status}`;
+  document.getElementById('side-status-date').textContent = new Date(c.updated_at).toLocaleDateString('fr-FR');
+
+  // Charges
+  const chargesEl = document.getElementById('d-charges');
+  const charges = c.charges || [];
+  if (charges.length) {
+    chargesEl.innerHTML = charges.map(ch => `<span class="charge-tag">⚖️ ${typeof ch === 'string' ? ch : (ch.article ? ch.article + ' — ' + ch.title : JSON.stringify(ch))}</span>`).join('');
+  }
+
+  // Permissions
+  const canEdit = CAN_EDIT.includes(profile.role);
+  const canAssignJudge = CAN_ASSIGN_JUDGE.includes(profile.role);
+  if (canEdit) {
+    document.getElementById('note-form').style.display = 'flex';
+    document.getElementById('assign-ada-btn').style.display = 'flex';
+    document.getElementById('gen-plea-btn').href = `plea-deal.html?case=${caseId}`;
+    document.getElementById('gen-plea-btn').style.display = 'flex';
+    document.getElementById('add-doc-btn').href = `plea-deal.html?case=${caseId}`;
+    document.getElementById('add-doc-btn').style.display = 'flex';
+  }
+  if (canAssignJudge) document.getElementById('assign-judge-btn').style.display = 'flex';
+}
+
+async function loadProfiles() {
+  const { data } = await sb.from('profiles').select('id,full_name,role,avatar_color').eq('is_active', true).order('full_name');
+  if (!data) return;
+
+  const adas = data.filter(p => ['ada','procureur_doj','ag','super_admin'].includes(p.role));
+  const judges = data.filter(p => ['juge','juge_en_chef','president_cour'].includes(p.role));
+
+  const adaSel = document.getElementById('ada-select');
+  adas.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = `${p.full_name} (${ROLE_LABELS[p.role]||p.role})`;
+    if (caseData && caseData.assigned_ada === p.id) opt.selected = true;
+    adaSel.appendChild(opt);
+  });
+  if (caseData && caseData.assigned_ada) renderAssignee('ada', data.find(p => p.id === caseData.assigned_ada));
+
+  const judgeSel = document.getElementById('judge-select');
+  judges.forEach(p => {
+    const opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = `${p.full_name} (${ROLE_LABELS[p.role]||p.role})`;
+    if (caseData && caseData.assigned_judge === p.id) opt.selected = true;
+    judgeSel.appendChild(opt);
+  });
+  if (caseData && caseData.assigned_judge) renderAssignee('judge', data.find(p => p.id === caseData.assigned_judge));
+}
+
+function renderAssignee(type, p) {
+  if (!p) return;
+  const el = document.getElementById(`${type}-display`);
+  el.innerHTML = `
+    <div class="assignee-avatar" style="background:${p.avatar_color||'#2251a3'}">${p.full_name.charAt(0)}</div>
+    <div>
+      <div class="assignee-name">${p.full_name}</div>
+      <div class="assignee-role">${ROLE_LABELS[p.role]||p.role}</div>
+    </div>`;
+}
+
+function toggleAssignForm(type) {
+  const form = document.getElementById(`${type}-form`);
+  form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
+async function assignPerson(type) {
+  const selId = document.getElementById(`${type}-select`).value;
+  const field = type === 'ada' ? 'assigned_ada' : 'assigned_judge';
+  const { error } = await sb.from('cases').update({ [field]: selId || null }).eq('id', caseId);
+  if (error) { alert('Erreur : ' + error.message); return; }
+
+  const label = type === 'ada' ? 'ADA assigné' : 'Juge assigné';
+  const { data: pData } = selId ? await sb.from('profiles').select('full_name').eq('id', selId).single() : { data: null };
+  await logHistory(type === 'ada' ? 'ada_assigned' : 'judge_assigned', field, caseData[field] || '—', pData?.full_name || 'Non assigné', null);
+
+  caseData[field] = selId || null;
+  if (selId && pData) {
+    const { data: fullP } = await sb.from('profiles').select('id,full_name,role,avatar_color').eq('id', selId).single();
+    renderAssignee(type, fullP);
+  } else {
+    document.getElementById(`${type}-display`).innerHTML = `<div style="color:var(--gray-3);font-size:13px">Non assigné</div>`;
+  }
+  toggleAssignForm(type);
+  loadHistory();
+}
+
+async function loadHistory() {
+  const { data } = await sb.from('case_history')
+    .select('*, user:profiles(full_name)')
+    .eq('case_id', caseId)
+    .order('created_at', {ascending: false})
+    .limit(30);
+
+  const container = document.getElementById('timeline');
+  if (!data?.length) {
+    container.innerHTML = '<p style="color:var(--gray-3);font-size:13px">Aucun historique.</p>';
+    return;
+  }
+
+  const actionLabels = {
+    status_changed: '📋 Statut modifié',
+    document_added: '📄 Document ajouté',
+    judge_assigned: '⚖️ Juge assigné',
+    ada_assigned: '👤 ADA assigné',
+    note_added: '📝 Note ajoutée',
+    created: '✅ Dossier créé',
+  };
+
+  container.innerHTML = data.map(item => `
+    <div class="tl-item">
+      <div class="tl-dot action-${item.action} ${!actionLabels[item.action]?'action-default':''}"></div>
+      <div class="tl-time">${new Date(item.created_at).toLocaleString('fr-FR')}</div>
+      <div class="tl-action">${actionLabels[item.action] || item.action}</div>
+      ${item.note ? `<div class="tl-detail">${escapeHtml(item.note)}</div>` : ''}
+      ${item.old_value && item.new_value ? `<div class="tl-detail">${escapeHtml(item.old_value)} → <strong>${escapeHtml(item.new_value)}</strong></div>` : ''}
+      <div class="tl-by">par ${item.user?.full_name || 'Système'}</div>
+    </div>
+  `).join('');
+}
+
+async function loadDocuments() {
+  const { data } = await sb.from('documents').select('*').eq('case_id', caseId).order('created_at', {ascending: false});
+  const container = document.getElementById('d-documents');
+  if (!data?.length) { container.innerHTML = '<p style="color:var(--gray-3);font-size:13px">Aucun document lié.</p>'; return; }
+
+  const docIcons = { plea_deal:'📋', acte_accusation:'⚖️', mandat:'🔏', rapport_audience:'📝', recommandation_caution:'💰', ordonnance:'📜', autre:'📄' };
+  container.innerHTML = data.map(d => `
+    <div class="doc-item">
+      <div class="doc-icon doc-type-${d.type||'autre'}">${docIcons[d.type]||'📄'}</div>
+      <div style="flex:1">
+        <div class="doc-name">${d.title}</div>
+        <div class="doc-meta">${d.type?.replace('_',' ').toUpperCase()} · ${new Date(d.created_at).toLocaleDateString('fr-FR')} ${d.is_signed?'· ✅ Signé':''}</div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function openStatusModal() {
+  if (!CAN_EDIT.includes(profile.role)) return;
+  document.getElementById('status-edit-form').style.display = 'block';
+  document.getElementById('new-status').value = caseData.status;
+}
+function closeStatusModal() {
+  document.getElementById('status-edit-form').style.display = 'none';
+}
+
+async function changeStatus() {
+  const newStatus = document.getElementById('new-status').value;
+  const note = document.getElementById('status-note').value.trim();
+  if (newStatus === caseData.status) { closeStatusModal(); return; }
+
+  const { error } = await sb.from('cases').update({ status: newStatus }).eq('id', caseId);
+  if (error) { document.getElementById('status-error').textContent = error.message; document.getElementById('status-error').classList.add('show'); return; }
+
+  await logHistory('status_changed', 'status', caseData.status, newStatus, note);
+  caseData.status = newStatus;
+
+  document.getElementById('h-status').textContent = newStatus;
+  document.getElementById('h-status').className = `status-pill s-${newStatus}`;
+  document.getElementById('side-status').textContent = newStatus;
+  document.getElementById('side-status').className = `status-pill s-${newStatus}`;
+  document.getElementById('h-updated').textContent = new Date().toLocaleDateString('fr-FR');
+
+  closeStatusModal();
+  loadHistory();
+}
+
+async function addNote() {
+  const note = document.getElementById('note-input').value.trim();
+  if (!note) return;
+  await logHistory('note_added', null, null, null, note);
+  document.getElementById('note-input').value = '';
+
+  // Display in notes section
+  const notesEl = document.getElementById('d-notes');
+  if (notesEl.querySelector('p')) notesEl.innerHTML = '';
+  const div = document.createElement('div');
+  div.style.cssText = 'padding:10px 0;border-bottom:1px solid var(--gray-2);font-size:13px;';
+  div.innerHTML = `<div style="font-weight:600;color:var(--navy);margin-bottom:2px">${profile.full_name}</div><div style="color:var(--gray-dk)">${escapeHtml(note)}</div><div style="font-size:11px;color:var(--gray-3);margin-top:3px;font-family:var(--font-mono)">${new Date().toLocaleString('fr-FR')}</div>`;
+  notesEl.prepend(div);
+  loadHistory();
+}
+
+async function logHistory(action, field, oldVal, newVal, note) {
+  await sb.from('case_history').insert({
+    case_id: caseId,
+    user_id: profile.id,
+    action,
+    field_changed: field,
+    old_value: oldVal,
+    new_value: newVal,
+    note,
+  });
+}
+
+function showError(msg) {
+  document.getElementById('loading').style.display = 'none';
+  const el = document.getElementById('page-error');
+  el.textContent = msg; el.classList.add('show');
+}
+function escapeHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+</script>
+</body>
+</html>

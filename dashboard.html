@@ -604,26 +604,27 @@ function buildDocGenerators() {
 
   if (DOJ_RESOURCES.includes(profile.role)) {
     generators.push(
-      {icon:'📋', title:'Accord de Plaidoyer', desc:'Génère un plea deal avec calcul automatique', badge:'Générateur'},
-      {icon:'⚖️', title:'Acte d\'Accusation', desc:'Formalise les charges contre un accusé', badge:'Générateur'},
-      {icon:'🔢', title:'Calculateur de Peine', desc:'Calcule les peines avec réductions', badge:'Outil'},
-      {icon:'🔏', title:'Mandat d\'Arrêt', desc:'Génère un mandat avec probable cause', badge:'Générateur'},
+      {icon:'📋', title:'Accord de Plaidoyer', desc:'Génère un plea deal avec calcul automatique', badge:'Générateur', href:'plea-deal.html'},
+      {icon:'⚖️', title:'Acte d\'Accusation', desc:'Formalise les charges contre un accusé', badge:'Bientôt', href:''},
+      {icon:'🔢', title:'Calculateur de Peine', desc:'Calcule les peines avec réductions', badge:'Bientôt', href:''},
+      {icon:'🔏', title:'Mandat d\'Arrêt', desc:'Génère un mandat avec probable cause', badge:'Bientôt', href:''},
     );
   }
 
   if (COUR_RESOURCES.includes(profile.role)) {
     generators.push(
-      {icon:'📜', title:'Ordonnance de Tribunal', desc:'Rédige une ordonnance officielle', badge:'Générateur'},
-      {icon:'📝', title:'Rapport d\'Audience', desc:'Compte-rendu d\'audience structuré', badge:'Générateur'},
+      {icon:'📜', title:'Ordonnance de Tribunal', desc:'Rédige une ordonnance officielle', badge:'Bientôt', href:''},
+      {icon:'📝', title:'Rapport d\'Audience', desc:'Compte-rendu d\'audience structuré', badge:'Bientôt', href:''},
     );
   }
 
   if (!generators.length) {
-    generators.push({icon:'📄', title:'Documents publics', desc:'Décisions de justice et arrêtés publics', badge:'Lecture'});
+    generators.push({icon:'📄', title:'Documents publics', desc:'Décisions de justice et arrêtés publics', badge:'Lecture', href:''});
   }
 
   container.innerHTML = generators.map(g => `
     <div style="background:var(--white);border:1px solid var(--gray-2);border-radius:8px;padding:20px;cursor:pointer;transition:all .2s;"
+         onclick="${g.href ? `window.location.href='${g.href}'` : ''}"
          onmouseover="this.style.boxShadow='var(--shadow-lg)';this.style.transform='translateY(-2px)'"
          onmouseout="this.style.boxShadow='';this.style.transform=''">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
@@ -632,7 +633,7 @@ function buildDocGenerators() {
       </div>
       <div style="font-family:var(--font-serif);font-size:16px;font-weight:700;color:var(--navy);margin-bottom:6px;">${g.title}</div>
       <div style="font-size:13px;color:var(--gray-4);line-height:1.5;">${g.desc}</div>
-      <div style="margin-top:12px;font-size:12px;font-weight:600;color:var(--blue-mid);">Accéder →</div>
+      <div style="margin-top:12px;font-size:12px;font-weight:600;color:${g.href ? 'var(--blue-mid)' : 'var(--gray-3)'};">${g.href ? 'Accéder →' : 'Bientôt disponible'}</div>
     </div>
   `).join('');
 }
@@ -716,7 +717,7 @@ function renderCases(cases) {
     return;
   }
   container.innerHTML = cases.map(c => `
-    <div class="case-item">
+    <div class="case-item" onclick="window.location.href='case-detail.html?id=${c.id}'" style="cursor:pointer;" onmouseover="this.style.background='var(--gray-1)'" onmouseout="this.style.background=''">
       <div class="priority-dot p-${c.priority||'normal'}"></div>
       <div>
         <div class="case-num">${c.case_number}</div>
@@ -739,7 +740,7 @@ function renderRecentCases(cases) {
     return;
   }
   container.innerHTML = cases.map(c => `
-    <div class="case-item">
+    <div class="case-item" onclick="window.location.href='case-detail.html?id=${c.id}'" style="cursor:pointer;" onmouseover="this.style.background='var(--gray-1)'" onmouseout="this.style.background=''">
       <div class="priority-dot p-${c.priority||'normal'}"></div>
       <div>
         <div class="case-num">${c.case_number}</div>
@@ -808,16 +809,17 @@ document.getElementById('new-case-form').addEventListener('submit', async (e) =>
 });
 
 // CHANNELS & MESSAGING
+let dmRealtimeSub = null;
+
 async function loadChannels() {
   const { data } = await sb.from('channels').select('*').order('name');
   const list = document.getElementById('channel-list');
-  if (!data?.length) { list.innerHTML = '<div style="padding:14px;font-size:13px;color:var(--gray-3)">Aucun canal disponible</div>'; return; }
 
   const grouped = { public: [], departmental: [], private: [] };
-  data.forEach(c => { if (grouped[c.type]) grouped[c.type].push(c); });
+  (data||[]).forEach(c => { if (grouped[c.type]) grouped[c.type].push(c); });
 
   const labels = { public: '🌐 Publics', departmental: '🏛️ Département', private: '🔒 Privés' };
-  list.innerHTML = Object.entries(grouped).map(([type, chs]) =>
+  let html = Object.entries(grouped).map(([type, chs]) =>
     chs.length ? `
       <div class="channel-group-label">${labels[type]}</div>
       ${chs.map(c => `
@@ -827,10 +829,115 @@ async function loadChannels() {
       `).join('')}
     ` : ''
   ).join('');
+
+  // Charger les DMs
+  html += await buildDMList();
+  list.innerHTML = html || '<div style="padding:14px;font-size:13px;color:var(--gray-3)">Aucun canal disponible</div>';
+}
+
+async function buildDMList() {
+  // Récupérer toutes les personnes avec qui on a déjà des DMs
+  const { data: sentDMs } = await sb.from('direct_messages').select('recipient_id').eq('sender_id', profile.id).eq('is_deleted', false);
+  const { data: recvDMs } = await sb.from('direct_messages').select('sender_id').eq('recipient_id', profile.id).eq('is_deleted', false);
+
+  const contactIds = new Set();
+  (sentDMs||[]).forEach(m => contactIds.add(m.recipient_id));
+  (recvDMs||[]).forEach(m => contactIds.add(m.sender_id));
+
+  // Charger tous les membres actifs pour permettre de démarrer un DM
+  const { data: members } = await sb.from('profiles').select('id,full_name,avatar_color,role').eq('is_active', true).neq('id', profile.id).order('full_name');
+  if (!members?.length) return '';
+
+  // Compter les DMs non lus
+  const { data: unreadDMs } = await sb.from('direct_messages').select('sender_id').eq('recipient_id', profile.id).eq('is_read', false).eq('is_deleted', false);
+  const unreadBySender = {};
+  (unreadDMs||[]).forEach(m => { unreadBySender[m.sender_id] = (unreadBySender[m.sender_id]||0) + 1; });
+
+  let html = '<div class="channel-group-label">💬 Messages privés</div>';
+  // Montrer d'abord les contacts existants, puis le reste
+  const contactList = members.filter(m => contactIds.has(m.id));
+  const otherList = members.filter(m => !contactIds.has(m.id));
+  const displayList = [...contactList, ...otherList].slice(0, 20);
+
+  displayList.forEach(m => {
+    const unread = unreadBySender[m.id] || 0;
+    html += `
+      <div class="channel-item" id="dm-${m.id}" onclick="selectDM('${m.id}','${escapeHtml(m.full_name)}','${m.avatar_color||'#2251a3'}')">
+        <span style="width:20px;height:20px;border-radius:50%;background:${m.avatar_color||'#2251a3'};display:inline-flex;align-items:center;justify-content:center;color:white;font-size:10px;font-weight:700;flex-shrink:0">${m.full_name.charAt(0)}</span>
+        <span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${m.full_name}</span>
+        ${unread > 0 ? `<span style="background:var(--red);color:white;font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono)">${unread}</span>` : ''}
+      </div>`;
+  });
+  return html;
+}
+
+let currentDMUserId = null;
+
+async function selectDM(userId, userName, avatarColor) {
+  currentChannelId = null;
+  currentDMUserId = userId;
+
+  document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+  document.getElementById(`dm-${userId}`)?.classList.add('active');
+
+  document.getElementById('current-channel-name').textContent = userName;
+  document.getElementById('current-channel-desc').textContent = 'Message privé';
+  document.getElementById('msg-input').disabled = false;
+  document.getElementById('msg-send').disabled = false;
+  document.getElementById('msg-input').placeholder = `Message à ${userName}...`;
+
+  // Marquer comme lus
+  await sb.from('direct_messages').update({ is_read: true }).eq('sender_id', userId).eq('recipient_id', profile.id);
+
+  // Charger les DMs
+  const { data } = await sb.from('direct_messages')
+    .select('*, sender:profiles!direct_messages_sender_id_fkey(full_name,role,avatar_color)')
+    .or(`and(sender_id.eq.${profile.id},recipient_id.eq.${userId}),and(sender_id.eq.${userId},recipient_id.eq.${profile.id})`)
+    .eq('is_deleted', false)
+    .order('created_at', {ascending: true})
+    .limit(60);
+
+  const list = document.getElementById('msg-list');
+  if (!data?.length) {
+    list.innerHTML = '<div class="msg-system">Aucun message. Démarrez la conversation !</div>';
+  } else {
+    list.innerHTML = data.map(m => renderMessage(m)).join('');
+    list.scrollTop = list.scrollHeight;
+  }
+
+  // Realtime DMs
+  if (realtimeSub) sb.removeChannel(realtimeSub);
+  if (dmRealtimeSub) sb.removeChannel(dmRealtimeSub);
+  dmRealtimeSub = sb.channel(`dm-${profile.id}-${userId}`)
+    .on('postgres_changes', {
+      event: 'INSERT', schema: 'public', table: 'direct_messages',
+      filter: `recipient_id=eq.${profile.id}`
+    }, payload => {
+      if (payload.new.sender_id === userId) {
+        sb.from('direct_messages').update({ is_read: true }).eq('id', payload.new.id);
+        sb.from('profiles').select('full_name,role,avatar_color').eq('id', payload.new.sender_id).single().then(({ data: sender }) => {
+          payload.new.sender = sender;
+          const list = document.getElementById('msg-list');
+          const sys = list.querySelector('.msg-system');
+          if (sys) list.innerHTML = '';
+          const div = document.createElement('div');
+          div.innerHTML = renderMessage(payload.new);
+          list.appendChild(div.firstElementChild);
+          list.scrollTop = list.scrollHeight;
+        });
+      }
+    }).subscribe();
+
+  // Refresh unread count
+  loadStats();
+  // Re-render DM list to clear unread badge
+  const { data: members } = await sb.from('profiles').select('id,full_name,avatar_color,role').eq('is_active', true).neq('id', profile.id).order('full_name');
 }
 
 async function selectChannel(id, name, desc) {
   currentChannelId = id;
+  currentDMUserId = null;
+  if (dmRealtimeSub) { sb.removeChannel(dmRealtimeSub); dmRealtimeSub = null; }
   document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
   const el = document.getElementById(`ch-${id}`);
   if (el) el.classList.add('active');
@@ -904,12 +1011,32 @@ function appendMessage(m) {
 }
 
 async function sendMessage() {
-  if (!currentChannelId) return;
   const input = document.getElementById('msg-input');
   const content = input.value.trim();
   if (!content) return;
-
   input.value = '';
+
+  if (currentDMUserId) {
+    // Envoi DM
+    await sb.from('direct_messages').insert({
+      sender_id: profile.id,
+      recipient_id: currentDMUserId,
+      content,
+      is_read: false,
+    });
+    // Afficher immédiatement côté envoyeur
+    const list = document.getElementById('msg-list');
+    const sys = list.querySelector('.msg-system');
+    if (sys) list.innerHTML = '';
+    const fakeMsg = { sender_id: profile.id, content, created_at: new Date().toISOString(), sender: { full_name: profile.full_name, role: profile.role, avatar_color: profile.avatar_color } };
+    const div = document.createElement('div');
+    div.innerHTML = renderMessage(fakeMsg);
+    list.appendChild(div.firstElementChild);
+    list.scrollTop = list.scrollHeight;
+    return;
+  }
+
+  if (!currentChannelId) return;
   await sb.from('messages').insert({
     channel_id: currentChannelId,
     sender_id: profile.id,
