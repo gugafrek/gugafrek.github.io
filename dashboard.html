@@ -662,10 +662,8 @@ function buildResources() {
   if (DOJ_RESOURCES.includes(profile.role)) {
     const dojItems = [
       { icon:'📖', title:'Glossaire juridique complet', desc:'Définitions officielles de tous les termes judiciaires', href:'glossaire.html' },
-      { icon:'🔔', title:'Notification des droits de l\'accusé', desc:'Texte officiel et règles d\'application lors d\'une garde à vue', href:'ressource-miranda.html' },
       { icon:'⚖️', title:'Règle de divulgation des preuves', desc:'Obligations de communication et divulgation à la défense', href:'' },
-      { icon:'📊', title:'Tableau de classification des infractions', desc:'Crimes, délits, contraventions — classes et peines', href:'code-penal.html#book-0' },
-      { icon:'✅', title:'Checklist pré-audience', desc:'Liste de vérification complète avant une audience', href:'' },
+      { icon:'✅', title:'Checklist pré-audience', desc:'Liste de vérification complète avant une audience', href:'checklist.html?dept=doj' },
       { icon:'🚫', title:'Catalogue des motifs d\'objection', desc:'Tous les motifs d\'irrecevabilité et de protestation formelle', href:'objections.html' },
     ];
     html += `
@@ -688,6 +686,7 @@ function buildResources() {
   if (COUR_RESOURCES.includes(profile.role)) {
     const courItems = [
       { icon:'📖', title:'Glossaire juridique complet', desc:'Définitions officielles de tous les termes judiciaires', href:'glossaire.html' },
+      { icon:'✅', title:'Checklist pré-audience', desc:'Liste de vérification complète avant une audience', href:'checklist.html?dept=cour' },
       { icon:'🏛️', title:'Procédures d\'audience', desc:'Déroulement officiel d\'un procès, étapes et rôles', href:'' },
       { icon:'👨‍⚖️', title:'Code de conduite judiciaire', desc:'Règles de déontologie, protocole d\'audience et décorum', href:'' },
       { icon:'🚫', title:'Catalogue des motifs d\'objection', desc:'Tous les motifs d\'irrecevabilité et de protestation formelle', href:'objections.html' },

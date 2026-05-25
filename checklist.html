@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DOJ Portal — Checklist pré-audience</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy-mid:#112240;--blue:#1a3a6e;--blue-mid:#2251a3;--blue-lt:#E8F0FA;
+  --gold:#c9a84c;--gold-lt:#e8c96a;--gold-dim:rgba(201,168,76,0.12);
+  --white:#ffffff;--gray-1:#f8f8f6;--gray-2:#ebebeb;--gray-3:#aaaaaa;--gray-4:#666;--gray-dk:#1a1a1a;
+  --red:#c0392b;--red-lt:#fdeaea;--green:#27ae60;--green-lt:#eafaf1;
+  --orange:#e67e22;--orange-lt:#fef5e7;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:'Libre Franklin',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --radius:6px;--shadow:0 2px 16px rgba(0,0,0,0.07);--shadow-lg:0 8px 40px rgba(0,0,0,0.14);
+}
+html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);color:var(--gray-dk);}
+
+/* TOPBAR */
+.topbar{background:var(--navy);font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.4);padding:5px 24px;display:flex;justify-content:space-between;}
+.topbar .dot{width:6px;height:6px;border-radius:50%;background:#3fb950;display:inline-block;margin-right:5px;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* NAV */
+.topnav{background:var(--navy-mid);border-bottom:1px solid rgba(201,168,76,0.25);position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.topnav-inner{max-width:1200px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:8px;height:58px;}
+.nav-logo{font-family:var(--font-serif);font-size:17px;color:var(--white);font-weight:700;display:flex;align-items:center;gap:10px;text-decoration:none;margin-right:16px;}
+.nav-logo .seal{width:34px;height:34px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--gold);font-family:var(--font-serif);font-weight:900;}
+.nav-logo span{color:var(--gold);}
+.back-btn{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;font-weight:500;padding:7px 12px;border-radius:var(--radius);transition:all .2s;cursor:pointer;border:none;background:none;font-family:var(--font-sans);display:flex;align-items:center;gap:6px;}
+.back-btn:hover{color:var(--white);background:rgba(255,255,255,0.08);}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.user-menu{display:flex;align-items:center;gap:8px;cursor:pointer;padding:5px 10px;border-radius:var(--radius);}
+.user-avatar{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;font-size:13px;flex-shrink:0;}
+.user-name{font-size:13px;color:rgba(255,255,255,0.8);font-weight:500;}
+.user-role{font-family:var(--font-mono);font-size:10px;color:var(--gold);}
+
+/* LAYOUT */
+.page-wrap{max-width:900px;margin:0 auto;padding:32px 24px 60px;}
+
+/* HEADER */
+.page-header{background:var(--navy);border-radius:10px;padding:28px 32px;margin-bottom:28px;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;}
+.page-header-left{}
+.page-header-badge{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.page-header-title{font-family:var(--font-serif);font-size:26px;color:var(--white);margin-bottom:6px;}
+.page-header-sub{font-size:13px;color:rgba(255,255,255,0.5);line-height:1.6;}
+.page-header-right{text-align:right;flex-shrink:0;}
+.progress-ring{position:relative;width:72px;height:72px;}
+.progress-ring svg{transform:rotate(-90deg);}
+.progress-ring circle{transition:stroke-dashoffset .4s ease;}
+.progress-ring .pct{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:15px;font-weight:700;color:var(--gold);}
+.progress-label{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;font-family:var(--font-mono);}
+
+/* SWITCHER */
+.dept-switcher{display:flex;gap:8px;margin-bottom:24px;}
+.dept-btn{padding:8px 18px;border-radius:20px;border:1.5px solid var(--gray-2);background:var(--white);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);color:var(--gray-4);transition:all .2s;}
+.dept-btn.active-doj{background:var(--blue-mid);border-color:var(--blue-mid);color:var(--white);}
+.dept-btn.active-cour{background:var(--navy);border-color:var(--navy);color:var(--gold);}
+.dept-btn:hover:not(.active-doj):not(.active-cour){background:var(--gray-2);}
+
+/* ACTIONS BAR */
+.actions-bar{display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;}
+.actions-bar-left{display:flex;gap:8px;}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 16px;border-radius:var(--radius);font-size:13px;font-weight:600;cursor:pointer;font-family:var(--font-sans);border:none;transition:all .2s;}
+.btn-ghost{background:var(--white);border:1.5px solid var(--gray-2);color:var(--gray-4);}
+.btn-ghost:hover{background:var(--gray-2);}
+.btn-danger{background:var(--red-lt);border:1.5px solid rgba(192,57,43,0.2);color:var(--red);}
+.btn-danger:hover{background:rgba(192,57,43,0.15);}
+.btn-primary{background:var(--blue-mid);color:white;}
+.btn-primary:hover{opacity:.9;}
+.progress-text{font-size:13px;color:var(--gray-4);font-family:var(--font-mono);}
+
+/* SECTION */
+.section{margin-bottom:20px;}
+.section-header{display:flex;align-items:center;gap:10px;padding:12px 16px;background:var(--white);border:1px solid var(--gray-2);border-radius:var(--radius) var(--radius) 0 0;cursor:pointer;user-select:none;}
+.section-icon{font-size:18px;flex-shrink:0;}
+.section-title{font-weight:700;font-size:14px;color:var(--navy);flex:1;}
+.section-count{font-family:var(--font-mono);font-size:11px;color:var(--gray-3);}
+.section-chevron{font-size:12px;color:var(--gray-3);transition:transform .2s;}
+.section.collapsed .section-chevron{transform:rotate(-90deg);}
+.section-body{border:1px solid var(--gray-2);border-top:none;border-radius:0 0 var(--radius) var(--radius);overflow:hidden;}
+.section.collapsed .section-body{display:none;}
+
+/* ITEMS */
+.checklist-item{display:flex;align-items:flex-start;gap:12px;padding:13px 16px;border-bottom:1px solid var(--gray-2);background:var(--white);transition:background .15s;cursor:pointer;}
+.checklist-item:last-child{border-bottom:none;}
+.checklist-item:hover{background:var(--blue-lt);}
+.checklist-item.checked{background:var(--green-lt);}
+.checklist-item.checked:hover{background:#d4f0e0;}
+.item-checkbox{width:20px;height:20px;border:2px solid var(--gray-2);border-radius:4px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .2s;margin-top:1px;}
+.checklist-item.checked .item-checkbox{background:var(--green);border-color:var(--green);color:white;}
+.item-content{flex:1;}
+.item-title{font-size:13px;font-weight:600;color:var(--gray-dk);line-height:1.4;margin-bottom:2px;}
+.checklist-item.checked .item-title{color:var(--gray-3);text-decoration:line-through;}
+.item-note{font-size:12px;color:var(--gray-4);line-height:1.5;}
+.item-badge{display:inline-block;padding:2px 7px;border-radius:10px;font-size:10px;font-weight:700;font-family:var(--font-mono);margin-left:6px;vertical-align:middle;}
+.badge-req{background:#fde8e8;color:var(--red);}
+.badge-opt{background:var(--gray-2);color:var(--gray-4);}
+.badge-crit{background:rgba(201,168,76,0.15);color:#7a5c00;}
+
+/* PRINT / export */
+@media print {
+  .topbar,.topnav,.dept-switcher,.actions-bar{display:none!important;}
+  .page-wrap{max-width:100%;padding:0;}
+  .section.collapsed .section-body{display:block!important;}
+  .checklist-item{break-inside:avoid;}
+}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--navy);color:white;padding:12px 18px;border-radius:var(--radius);font-size:13px;font-family:var(--font-mono);box-shadow:var(--shadow-lg);z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+
+/* COMPLETE BANNER */
+.complete-banner{display:none;background:var(--green);color:white;border-radius:var(--radius);padding:14px 20px;margin-bottom:20px;font-weight:600;font-size:14px;text-align:center;animation:slideDown .3s ease;}
+.complete-banner.show{display:block;}
+@keyframes slideDown{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div><span class="dot"></span>DOJ PORTAL — SYSTÈME JUDICIAIRE DE SAN ANDREAS</div>
+  <div id="top-time" style="font-family:var(--font-mono);"></div>
+</div>
+
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a href="dashboard.html" class="nav-logo">
+      <div class="seal">⚖</div>
+      <span>San Andreas</span> DOJ
+    </a>
+    <button class="back-btn" onclick="window.location.href='dashboard.html'">← Retour au tableau de bord</button>
+    <div class="nav-right">
+      <div class="user-menu">
+        <div class="user-avatar" id="nav-avatar" style="background:var(--blue-mid)"></div>
+        <div>
+          <div class="user-name" id="nav-name">—</div>
+          <div class="user-role" id="nav-role">—</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="page-wrap">
+  <div id="complete-banner" class="complete-banner">✅ Checklist complétée — Vous êtes prêt(e) pour l'audience !</div>
+
+  <div class="page-header">
+    <div class="page-header-left">
+      <div class="page-header-badge" id="header-badge">CHECKLIST</div>
+      <div class="page-header-title" id="header-title">Chargement…</div>
+      <div class="page-header-sub" id="header-sub"></div>
+    </div>
+    <div class="page-header-right">
+      <div class="progress-ring">
+        <svg width="72" height="72" viewBox="0 0 72 72">
+          <circle cx="36" cy="36" r="28" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="6"/>
+          <circle id="ring-fg" cx="36" cy="36" r="28" fill="none" stroke="var(--gold)" stroke-width="6"
+            stroke-dasharray="175.93" stroke-dashoffset="175.93" stroke-linecap="round"/>
+        </svg>
+        <div class="pct"><span id="ring-pct">0%</span></div>
+      </div>
+      <div class="progress-label" id="ring-label">0 / 0</div>
+    </div>
+  </div>
+
+  <div class="dept-switcher" id="dept-switcher"></div>
+
+  <div class="actions-bar">
+    <div class="actions-bar-left">
+      <button class="btn btn-ghost" onclick="expandAll()">⊞ Tout développer</button>
+      <button class="btn btn-ghost" onclick="collapseAll()">⊟ Tout réduire</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:12px;">
+      <span class="progress-text" id="progress-text">0 sur 0 éléments cochés</span>
+      <button class="btn btn-danger" onclick="resetAll()">↺ Réinitialiser</button>
+      <button class="btn btn-primary" onclick="window.print()">🖨 Imprimer</button>
+    </div>
+  </div>
+
+  <div id="checklist-container"></div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB_URL = 'https://qwdpiskikxsalwgjyqvr.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3ZHBpc2tpa3hzYWx3Z2p5cXZyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzk1NjM0NDYsImV4cCI6MjA5NTEzOTQ0Nn0.y6DSLGU3qnl-ucJITTg70eEqG7yV97W77OKMT5E9RRY';
+const sb = supabase.createClient(SB_URL, SB_KEY);
+
+let profile = null;
+let currentDept = 'doj'; // 'doj' or 'cour'
+let checkState = {}; // { itemId: true/false }
+
+// ─── CHECKLIST DATA ─────────────────────────────────────────────────────────
+
+const CHECKLISTS = {
+  doj: {
+    title: 'Checklist pré-audience — DOJ',
+    sub: 'À compléter avant chaque comparution, plaidoirie ou présentation devant la Cour',
+    badge: 'DÉPARTEMENT DE JUSTICE',
+    sections: [
+      {
+        id: 'dossier',
+        icon: '📁',
+        title: 'Constitution du dossier',
+        items: [
+          { id: 'd1', title: 'Dossier de l\'affaire ouvert et accessible', note: 'Vérifiez que le numéro de dossier est correct et que vous avez accès à toutes les pièces.', req: 'req' },
+          { id: 'd2', title: 'Identité du prévenu vérifiée', note: 'Nom complet, date de naissance, casier judiciaire, antécédents connus.', req: 'req' },
+          { id: 'd3', title: 'Chef(s) d\'inculpation clairement définis', note: 'Chaque inculpation doit être associée à un article du Code Pénal avec la classe correspondante.', req: 'req' },
+          { id: 'd4', title: 'Ordre d\'arrestation / Mandat consulté', note: 'Vérifiez la validité du mandat ou les circonstances de l\'arrestation.', req: 'req' },
+          { id: 'd5', title: 'Rapport d\'incident ou de police joint au dossier', note: 'Le rapport doit être complet et signé par l\'agent compétent.', req: 'crit' },
+          { id: 'd6', title: 'Notification des droits transmise à la défense', note: 'Confirmation que l\'accusé a été informé de ses droits lors de l\'arrestation.', req: 'req' },
+        ]
+      },
+      {
+        id: 'preuves',
+        icon: '🔍',
+        title: 'Preuves et éléments à charge',
+        items: [
+          { id: 'p1', title: 'Inventaire des preuves matérielles établi', note: 'Liste complète : saisies, armes, véhicules, substances, etc.', req: 'req' },
+          { id: 'p2', title: 'Éléments numériques ou audiovisuels listés', note: 'Enregistrements, captures d\'écran, données téléphoniques, vidéos de surveillance.', req: 'opt' },
+          { id: 'p3', title: 'Preuves communiquées à la défense (obligation de divulgation)', note: 'Toute preuve favorable à la défense doit être communiquée avant l\'audience.', req: 'crit' },
+          { id: 'p4', title: 'Chaîne de conservation des preuves vérifiée', note: 'Chaque pièce doit avoir un traçage depuis la collecte jusqu\'à l\'audience.', req: 'req' },
+          { id: 'p5', title: 'Rapport d\'expert ou d\'analyse disponible (si applicable)', note: 'Expertise balistique, toxicologique, ou autre selon les inculpations.', req: 'opt' },
+        ]
+      },
+      {
+        id: 'temoins',
+        icon: '👤',
+        title: 'Témoins et dépositions',
+        items: [
+          { id: 't1', title: 'Liste des témoins à charge dressée', note: 'Nom, rôle, disponibilité, et résumé de leur déposition prévue.', req: 'req' },
+          { id: 't2', title: 'Témoins convoqués et confirmés', note: 'Vérifiez que chaque témoin a reçu sa convocation et a confirmé sa présence.', req: 'req' },
+          { id: 't3', title: 'Dépositions préliminaires relues', note: 'Revoyez les déclarations antérieures pour détecter toute contradiction.', req: 'crit' },
+          { id: 't4', title: 'Questions préparées pour chaque témoin', note: 'Anticipez aussi les questions de la défense pour préparer les objections.', req: 'crit' },
+          { id: 't5', title: 'Témoignages potentiellement hostiles identifiés', note: 'Si un témoin peut témoigner contre votre thèse, préparez une stratégie de contre-interrogatoire.', req: 'opt' },
+        ]
+      },
+      {
+        id: 'plaidoirie',
+        icon: '🗣️',
+        title: 'Préparation de la plaidoirie',
+        items: [
+          { id: 'pl1', title: 'Théorie du crime clairement formulée', note: 'Votre récit des faits doit être cohérent, chronologique et étayé par les preuves.', req: 'crit' },
+          { id: 'pl2', title: 'Arguments juridiques fondés sur le Code Pénal', note: 'Chaque inculpation doit citer l\'article exact, la classe d\'infraction et la peine applicable.', req: 'req' },
+          { id: 'pl3', title: 'Discours d\'ouverture rédigé ou structuré', note: 'Résumé factuel, objectif, présentant la thèse de l\'accusation.', req: 'req' },
+          { id: 'pl4', title: 'Réquisitoire de peine préparé', note: 'Propositions de peine basées sur la gravité, les antécédents et les circonstances aggravantes.', req: 'req' },
+          { id: 'pl5', title: 'Possibilité d\'accord de plaidoyer évaluée', note: 'Si applicable, un accord de plaidoyer peut avoir été soumis via le générateur de plea deal.', req: 'opt' },
+          { id: 'pl6', title: 'Objections possibles de la défense anticipées', note: 'Consultez le catalogue des objections pour identifier les points de friction probables.', req: 'crit' },
+        ]
+      },
+      {
+        id: 'procedure',
+        icon: '⚖️',
+        title: 'Protocole et procédure',
+        items: [
+          { id: 'pr1', title: 'Robe et tenue formelle portées', note: 'La tenue professionnelle est obligatoire dans la salle d\'audience.', req: 'req' },
+          { id: 'pr2', title: 'Heure d\'audience confirmée avec la Cour', note: 'Vérifiez l\'agenda et assurez-vous qu\'aucun changement n\'a eu lieu.', req: 'req' },
+          { id: 'pr3', title: 'Juge et chambre assignés connus', note: 'Identifiez le magistrat pour adapter votre approche si nécessaire.', req: 'req' },
+          { id: 'pr4', title: 'Avocat de la défense identifié', note: 'Connaître son identité aide à anticiper sa stratégie.', req: 'opt' },
+          { id: 'pr5', title: 'Salle d\'audience vérifiée et accessible', note: 'Confirmez que la salle est disponible et que l\'équipement fonctionne.', req: 'opt' },
+          { id: 'pr6', title: 'Déclaration de clôture préparée', note: 'Même brève, elle doit synthétiser les éléments clés de votre argumentation.', req: 'req' },
+        ]
+      },
+      {
+        id: 'documents',
+        icon: '📄',
+        title: 'Documents officiels',
+        items: [
+          { id: 'doc1', title: 'Acte d\'accusation rédigé et signé', note: 'Document formel listant tous les chefs d\'inculpation retenus.', req: 'crit' },
+          { id: 'doc2', title: 'Demandes de pièces soumises (si applicable)', note: 'Ordonnances de production de preuves, sous-poenas, etc.', req: 'opt' },
+          { id: 'doc3', title: 'Accord de plaidoyer signé déposé (si applicable)', note: 'Si un plea deal a été conclu, le document signé doit être joint au dossier.', req: 'opt' },
+          { id: 'doc4', title: 'Dossier numérique sauvegardé sur le portail', note: 'Vérifiez que le dossier est à jour dans le système DOJ.', req: 'req' },
+        ]
+      }
+    ]
+  },
+
+  cour: {
+    title: 'Checklist pré-audience — Cour',
+    sub: 'À compléter avant chaque séance, délibération ou décision judiciaire',
+    badge: 'COUR DE JUSTICE',
+    sections: [
+      {
+        id: 'dossier',
+        icon: '📁',
+        title: 'Dossier de l\'affaire',
+        items: [
+          { id: 'd1', title: 'Dossier de l\'affaire reçu et consulté', note: 'Vérifiez que vous avez accès à l\'intégralité du dossier, y compris les annexes.', req: 'req' },
+          { id: 'd2', title: 'Identité des parties vérifiées', note: 'Prévenu, partie civile (si applicable), représentants légaux.', req: 'req' },
+          { id: 'd3', title: 'Chefs d\'inculpation lus et compris', note: 'Chaque article du Code Pénal doit être maîtrisé avant l\'audience.', req: 'crit' },
+          { id: 'd4', title: 'Acte d\'accusation du Ministère Public consulté', note: 'Document de référence préparé par l\'ADA ou le Procureur.', req: 'req' },
+          { id: 'd5', title: 'Mémoire de défense reçu et lu (si soumis)', note: 'La défense peut avoir soumis ses arguments par écrit avant l\'audience.', req: 'opt' },
+          { id: 'd6', title: 'Antécédents judiciaires du prévenu consultés', note: 'Casier judiciaire et affaires précédentes pour contextualiser la décision.', req: 'req' },
+        ]
+      },
+      {
+        id: 'procedure',
+        icon: '🏛️',
+        title: 'Préparation de l\'audience',
+        items: [
+          { id: 'pr1', title: 'Ordre du jour de la séance établi', note: 'Affaires inscrites, ordre de passage, durées estimées.', req: 'crit' },
+          { id: 'pr2', title: 'Greffier et personnel de salle confirmés', note: 'Vérifiez la présence du greffier pour le compte-rendu officiel.', req: 'req' },
+          { id: 'pr3', title: 'Parties et avocats convoqués', note: 'Confirmation de présence de l\'ADA, de l\'avocat de la défense, du prévenu.', req: 'req' },
+          { id: 'pr4', title: 'Témoins convoqués confirmés (si applicable)', note: 'La Cour peut avoir requis la présence de témoins.', req: 'opt' },
+          { id: 'pr5', title: 'Salle d\'audience préparée et vérifiée', note: 'Disposition des sièges, équipements de sonorisation, accès sécurisé.', req: 'req' },
+          { id: 'pr6', title: 'Robe et tenue formelle portées', note: 'La tenue du magistrat est obligatoire lors de toute séance officielle.', req: 'req' },
+        ]
+      },
+      {
+        id: 'droit',
+        icon: '⚖️',
+        title: 'Droit applicable et jurisprudence',
+        items: [
+          { id: 'dr1', title: 'Articles du Code Pénal applicables identifiés', note: 'Référez-vous au Code Pénal en ligne pour chaque inculpation.', req: 'crit' },
+          { id: 'dr2', title: 'Peines minimales et maximales vérifiées', note: 'Plage de peine pour chaque chef selon la classe d\'infraction.', req: 'crit' },
+          { id: 'dr3', title: 'Circonstances aggravantes ou atténuantes identifiées', note: 'Récidive, coopération, attitude, aveux, etc.', req: 'req' },
+          { id: 'dr4', title: 'Précédents judiciaires pertinents consultés (si applicable)', note: 'Décisions antérieures similaires pour harmoniser la jurisprudence.', req: 'opt' },
+          { id: 'dr5', title: 'Questions procédurales soulevées examinées', note: 'Recevabilité des preuves, régularité de la procédure d\'arrestation, droits de l\'accusé.', req: 'req' },
+        ]
+      },
+      {
+        id: 'deliberation',
+        icon: '🤔',
+        title: 'Délibération et décision',
+        items: [
+          { id: 'del1', title: 'Grille de délibération préparée', note: 'Pour chaque chef : culpabilité établie ? Preuves suffisantes ? Doute raisonnable ?', req: 'crit' },
+          { id: 'del2', title: 'Options de verdict connues', note: 'Culpable, non coupable, coupable avec circonstances atténuantes, renvoi.', req: 'req' },
+          { id: 'del3', title: 'Plage de peine définie pour chaque chef retenu', note: 'En cas de verdict de culpabilité, la peine doit être justifiée et documentée.', req: 'req' },
+          { id: 'del4', title: 'Peine totale calculée (cumul ou concours)', note: 'Vérifiez si les peines se cumulent ou si le principe de concours d\'infractions s\'applique.', req: 'crit' },
+          { id: 'del5', title: 'Décision motivée rédigée ou structurée', note: 'La décision doit comporter les faits, le droit applicable, et la peine prononcée.', req: 'crit' },
+          { id: 'del6', title: 'Voies de recours mentionnées (si applicable)', note: 'Informer les parties des délais et modalités d\'appel.', req: 'opt' },
+        ]
+      },
+      {
+        id: 'objections',
+        icon: '🚫',
+        title: 'Gestion des objections et des incidents d\'audience',
+        items: [
+          { id: 'obj1', title: 'Catalogue des objections consulté', note: 'Familiarisez-vous avec les objections recevables et leur traitement.', req: 'req' },
+          { id: 'obj2', title: 'Protocole de maintien de l\'ordre connu', note: 'Que faire en cas de perturbation, outrage à la Cour, ou comportement irrespectueux.', req: 'req' },
+          { id: 'obj3', title: 'Règles sur la recevabilité des preuves maîtrisées', note: 'Preuves obtenues illégalement, témoignages par ouï-dire, documents non authentifiés.', req: 'crit' },
+          { id: 'obj4', title: 'Procédure de récusation connue (si applicable)', note: 'Dans les rares cas où la partialité du juge pourrait être soulevée.', req: 'opt' },
+        ]
+      },
+      {
+        id: 'apres',
+        icon: '📋',
+        title: 'Après l\'audience',
+        items: [
+          { id: 'ap1', title: 'Procès-verbal de l\'audience signé par le greffier', note: 'Document officiel consignant le déroulement et la décision rendue.', req: 'crit' },
+          { id: 'ap2', title: 'Décision notifiée aux parties', note: 'L\'ADA, l\'avocat de la défense et le prévenu doivent être informés du verdict.', req: 'req' },
+          { id: 'ap3', title: 'Dossier mis à jour sur le portail DOJ', note: 'Statut du dossier, décision rendue, peine prononcée.', req: 'req' },
+          { id: 'ap4', title: 'Exécution de la peine transmise aux autorités compétentes', note: 'Transmission à la SASP pour exécution de la peine privative de liberté ou autre.', req: 'req' },
+        ]
+      }
+    ]
+  }
+};
+
+// ─── ROLE LABELS ────────────────────────────────────────────────────────────
+const ROLE_LABELS = {
+  super_admin:'Super Administrateur', ag:'Avocat Général', procureur_doj:'Procureur',
+  ada:'Adjoint au Procureur (ADA)', coordinateur_doj:'Coordinateur DOJ',
+  assistant_juridique:'Assistant Juridique', stagiaire_doj:'Stagiaire DOJ',
+  president_cour:'Président de la Cour', juge_en_chef:'Juge en Chef',
+  juge:'Juge', avocat_commis:'Avocat Commis d\'Office', sasp:'Agent SASP'
+};
+const DOJ_ROLES = ['super_admin','ag','procureur_doj','ada','coordinateur_doj','assistant_juridique','stagiaire_doj'];
+const COUR_ROLES = ['super_admin','president_cour','juge_en_chef','juge','avocat_commis'];
+const DEPT_COLORS = { doj: 'var(--blue-mid)', cour: 'var(--navy)' };
+
+// ─── CLOCK ───────────────────────────────────────────────────────────────────
+function updateClock() {
+  const now = new Date();
+  document.getElementById('top-time').textContent =
+    now.toLocaleDateString('fr-CA') + ' ' + now.toLocaleTimeString('fr-CA',{hour:'2-digit',minute:'2-digit',second:'2-digit'});
+}
+setInterval(updateClock, 1000); updateClock();
+
+// ─── STORAGE KEY ─────────────────────────────────────────────────────────────
+function storageKey() { return `checklist_${currentDept}_${profile?.id || 'anon'}`; }
+
+function loadState() {
+  try { checkState = JSON.parse(localStorage.getItem(storageKey()) || '{}'); } catch { checkState = {}; }
+}
+function saveState() {
+  localStorage.setItem(storageKey(), JSON.stringify(checkState));
+}
+
+// ─── AUTH ─────────────────────────────────────────────────────────────────────
+async function init() {
+  const { data: { session } } = await sb.auth.getSession();
+  if (!session) { window.location.href = 'index.html'; return; }
+
+  const cached = sessionStorage.getItem('profile');
+  if (cached) {
+    profile = JSON.parse(cached);
+  } else {
+    const { data } = await sb.from('profiles').select('*').eq('id', session.user.id).single();
+    if (!data) { await sb.auth.signOut(); window.location.href = 'index.html'; return; }
+    profile = data;
+    sessionStorage.setItem('profile', JSON.stringify(profile));
+  }
+
+  // Set nav
+  document.getElementById('nav-name').textContent = profile.display_name || profile.full_name || 'Utilisateur';
+  document.getElementById('nav-role').textContent = ROLE_LABELS[profile.role] || profile.role;
+  const initials = (profile.display_name || profile.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
+  const avatar = document.getElementById('nav-avatar');
+  avatar.textContent = initials;
+  avatar.style.background = profile.department === 'cour' ? 'var(--navy)' : 'var(--blue-mid)';
+
+  // Determine default dept from URL param or profile
+  const urlDept = new URLSearchParams(window.location.search).get('dept');
+  if (urlDept === 'cour' || urlDept === 'doj') {
+    currentDept = urlDept;
+  } else if (profile.department === 'cour') {
+    currentDept = 'cour';
+  } else {
+    currentDept = 'doj';
+  }
+
+  renderSwitcher();
+  loadState();
+  renderChecklist();
+}
+
+// ─── SWITCHER ─────────────────────────────────────────────────────────────────
+function renderSwitcher() {
+  const sw = document.getElementById('dept-switcher');
+  // Show switcher only for super_admin or roles that have access to both
+  const showBoth = profile.role === 'super_admin' || profile.role === 'ag';
+  if (!showBoth) { sw.style.display = 'none'; return; }
+  sw.innerHTML = `
+    <button class="dept-btn ${currentDept==='doj'?'active-doj':''}" onclick="switchDept('doj')">🏛️ Version DOJ</button>
+    <button class="dept-btn ${currentDept==='cour'?'active-cour':''}" onclick="switchDept('cour')">⚖️ Version Cour</button>
+  `;
+}
+
+function switchDept(dept) {
+  currentDept = dept;
+  loadState();
+  renderSwitcher();
+  renderChecklist();
+}
+
+// ─── RENDER ───────────────────────────────────────────────────────────────────
+function renderChecklist() {
+  const cl = CHECKLISTS[currentDept];
+  document.title = `DOJ Portal — ${cl.title}`;
+  document.getElementById('header-badge').textContent = cl.badge;
+  document.getElementById('header-title').textContent = cl.title;
+  document.getElementById('header-sub').textContent = cl.sub;
+
+  const container = document.getElementById('checklist-container');
+  container.innerHTML = '';
+
+  cl.sections.forEach(sec => {
+    const secEl = document.createElement('div');
+    secEl.className = 'section';
+    secEl.id = `sec-${sec.id}`;
+
+    const doneInSec = sec.items.filter(it => checkState[it.id]).length;
+    secEl.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${sec.id}')">
+        <div class="section-icon">${sec.icon}</div>
+        <div class="section-title">${sec.title}</div>
+        <div class="section-count">${doneInSec}/${sec.items.length}</div>
+        <div class="section-chevron">▼</div>
+      </div>
+      <div class="section-body">
+        ${sec.items.map(it => renderItem(it)).join('')}
+      </div>
+    `;
+    container.appendChild(secEl);
+  });
+
+  updateProgress();
+}
+
+function renderItem(it) {
+  const done = !!checkState[it.id];
+  const badgeHtml = it.req === 'req' ? '<span class="item-badge badge-req">REQUIS</span>'
+    : it.req === 'crit' ? '<span class="item-badge badge-crit">CRITIQUE</span>'
+    : '<span class="item-badge badge-opt">OPTIONNEL</span>';
+  return `
+    <div class="checklist-item ${done ? 'checked' : ''}" id="item-${it.id}" onclick="toggleItem('${it.id}')">
+      <div class="item-checkbox">${done ? '✓' : ''}</div>
+      <div class="item-content">
+        <div class="item-title">${it.title}${badgeHtml}</div>
+        <div class="item-note">${it.note}</div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── TOGGLE ───────────────────────────────────────────────────────────────────
+function toggleItem(id) {
+  checkState[id] = !checkState[id];
+  saveState();
+
+  const el = document.getElementById(`item-${id}`);
+  if (checkState[id]) {
+    el.classList.add('checked');
+    el.querySelector('.item-checkbox').textContent = '✓';
+  } else {
+    el.classList.remove('checked');
+    el.querySelector('.item-checkbox').textContent = '';
+  }
+
+  // Update section count
+  const cl = CHECKLISTS[currentDept];
+  for (const sec of cl.sections) {
+    if (sec.items.find(it => it.id === id)) {
+      const doneInSec = sec.items.filter(it => checkState[it.id]).length;
+      const countEl = document.querySelector(`#sec-${sec.id} .section-count`);
+      if (countEl) countEl.textContent = `${doneInSec}/${sec.items.length}`;
+      break;
+    }
+  }
+
+  updateProgress();
+}
+
+function toggleSection(id) {
+  const el = document.getElementById(`sec-${id}`);
+  el.classList.toggle('collapsed');
+}
+
+function expandAll() {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('collapsed'));
+}
+function collapseAll() {
+  document.querySelectorAll('.section').forEach(s => s.classList.add('collapsed'));
+}
+
+function resetAll() {
+  if (!confirm('Réinitialiser toute la checklist ? Cette action ne peut pas être annulée.')) return;
+  checkState = {};
+  saveState();
+  renderChecklist();
+  showToast('Checklist réinitialisée');
+  document.getElementById('complete-banner').classList.remove('show');
+}
+
+// ─── PROGRESS ─────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const cl = CHECKLISTS[currentDept];
+  const total = cl.sections.reduce((acc, s) => acc + s.items.length, 0);
+  const done = cl.sections.reduce((acc, s) => acc + s.items.filter(it => checkState[it.id]).length, 0);
+
+  const pct = total > 0 ? Math.round((done / total) * 100) : 0;
+  const circumference = 175.93;
+  const offset = circumference - (pct / 100) * circumference;
+
+  document.getElementById('ring-pct').textContent = pct + '%';
+  document.getElementById('ring-fg').style.strokeDashoffset = offset;
+  document.getElementById('ring-label').textContent = `${done} / ${total}`;
+  document.getElementById('progress-text').textContent = `${done} sur ${total} éléments cochés`;
+
+  const banner = document.getElementById('complete-banner');
+  if (done === total && total > 0) {
+    banner.classList.add('show');
+  } else {
+    banner.classList.remove('show');
+  }
+}
+
+// ─── TOAST ────────────────────────────────────────────────────────────────────
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// ─── BOOT ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
