@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Catalogue des Objections — DOJ San Andreas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy-mid:#112240;--blue:#1a3a6e;--blue-mid:#2251a3;--blue-lt:#E8F0FA;
+  --gold:#c9a84c;--gold-lt:#e8c96a;--gold-dim:rgba(201,168,76,0.12);
+  --white:#fff;--gray-1:#f8f8f6;--gray-2:#ebebeb;--gray-3:#aaa;--gray-4:#666;--gray-dk:#1a1a1a;
+  --red:#c0392b;--red-lt:#fdeaea;--green:#27ae60;--green-lt:#eafaf1;--orange:#e67e22;--orange-lt:#fef5e7;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:'Libre Franklin',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --radius:6px;
+}
+html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);color:var(--gray-dk);}
+.topbar{background:var(--navy);font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.4);padding:5px 24px;display:flex;justify-content:space-between;}
+.topnav{background:var(--navy-mid);border-bottom:1px solid rgba(201,168,76,0.25);position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.topnav-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:10px;height:56px;}
+.nav-logo{font-family:var(--font-serif);font-size:15px;color:var(--white);font-weight:700;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo .seal{width:30px;height:30px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold);font-weight:900;}
+.nav-logo span{color:var(--gold);}
+.back-btn{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:var(--radius);transition:all .2s;}
+.back-btn:hover{color:white;background:rgba(255,255,255,0.08);}
+.nav-title{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-left:auto;}
+.page{max-width:1100px;margin:0 auto;padding:28px 24px;}
+.doc-banner{background:var(--navy);color:white;padding:24px 32px;border-radius:8px;margin-bottom:24px;position:relative;overflow:hidden;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;}
+.doc-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 70% at 80% 50%,rgba(192,57,43,0.1) 0%,transparent 70%);}
+.doc-banner-left{position:relative;}
+.doc-banner-eyebrow{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+.doc-banner-title{font-family:var(--font-serif);font-size:26px;font-weight:900;margin-bottom:6px;}
+.doc-banner-sub{font-size:13px;color:rgba(255,255,255,0.5);max-width:500px;line-height:1.6;}
+.doc-banner-stat{position:relative;text-align:right;flex-shrink:0;}
+.stat-big{font-family:var(--font-mono);font-size:48px;font-weight:500;color:var(--gold);line-height:1;}
+.stat-label{font-size:11px;color:rgba(255,255,255,0.4);margin-top:4px;font-family:var(--font-mono);}
+.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.search-wrap{position:relative;flex:1;min-width:200px;}
+.search-wrap input{width:100%;padding:11px 16px 11px 40px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:13.5px;font-family:var(--font-sans);outline:none;background:var(--white);}
+.search-wrap input:focus{border-color:var(--blue-mid);}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--gray-3);}
+.filter-btns{display:flex;gap:6px;flex-wrap:wrap;}
+.filter-btn{padding:7px 14px;border-radius:var(--radius);font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-2);background:var(--white);color:var(--gray-4);transition:all .15s;font-family:var(--font-sans);}
+.filter-btn:hover{border-color:var(--blue-mid);color:var(--blue-mid);}
+.filter-btn.active{background:var(--navy);color:white;border-color:var(--navy);}
+
+.categories-section{margin-bottom:28px;}
+.cat-header{display:flex;align-items:center;gap:12px;margin-bottom:14px;}
+.cat-icon{font-size:20px;}
+.cat-title{font-family:var(--font-serif);font-size:20px;font-weight:700;color:var(--navy);}
+.cat-count{font-family:var(--font-mono);font-size:11px;color:var(--gray-3);background:var(--gray-2);padding:3px 8px;border-radius:3px;}
+.obj-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.obj-card{background:var(--white);border:1px solid var(--gray-2);border-radius:8px;overflow:hidden;transition:all .2s;cursor:default;}
+.obj-card:hover{box-shadow:0 4px 20px rgba(0,0,0,0.1);transform:translateY(-2px);}
+.obj-card-top{padding:14px 16px 10px;border-bottom:3px solid transparent;}
+.obj-card-top.recevabilite{border-color:var(--red);}
+.obj-card-top.forme{border-color:var(--orange);}
+.obj-card-top.fond{border-color:var(--blue-mid);}
+.obj-card-top.comportement{border-color:#9b59b6;}
+.obj-card-top.temoignage{border-color:var(--green);}
+.obj-num{font-family:var(--font-mono);font-size:10px;color:var(--gray-3);margin-bottom:6px;}
+.obj-name{font-size:14px;font-weight:700;color:var(--navy);margin-bottom:6px;line-height:1.3;}
+.obj-trigger{font-family:var(--font-mono);font-size:11px;color:var(--white);background:var(--navy);padding:4px 10px;border-radius:4px;display:inline-block;margin-bottom:8px;}
+.obj-body{padding:10px 16px 14px;}
+.obj-def{font-size:12px;color:var(--gray-4);line-height:1.65;margin-bottom:8px;}
+.obj-example{font-size:11.5px;color:var(--gray-dk);background:var(--gray-1);border-left:2px solid var(--gold);padding:7px 10px;border-radius:0 4px 4px 0;font-style:italic;}
+.obj-sustained{font-size:11px;color:var(--green);font-weight:600;margin-top:8px;display:flex;align-items:center;gap:4px;}
+.obj-overruled{font-size:11px;color:var(--red);font-weight:600;margin-top:4px;display:flex;align-items:center;gap:4px;}
+
+.no-results{padding:40px;text-align:center;background:var(--white);border-radius:8px;border:1px solid var(--gray-2);color:var(--gray-3);}
+mark{background:#fff3a3;border-radius:2px;padding:0 1px;}
+@media(max-width:900px){.obj-grid{grid-template-columns:repeat(2,1fr);}}
+@media(max-width:600px){.obj-grid{grid-template-columns:1fr;}.doc-banner-stat{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>DOJ PORTAL — SAN ANDREAS // PORTAIL SÉCURISÉ</span>
+  <span id="clock"></span>
+</div>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="nav-logo" href="dashboard.html">
+      <div class="seal">DA</div>
+      <div>DOJ <span>Portal</span></div>
+    </a>
+    <a class="back-btn" href="dashboard.html">← Tableau de bord</a>
+    <span class="nav-title">Catalogue des objections</span>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="doc-banner">
+    <div class="doc-banner-left">
+      <div class="doc-banner-eyebrow">Ressource officielle · Département de Justice</div>
+      <div class="doc-banner-title">Catalogue des Motifs d'Objection</div>
+      <div class="doc-banner-sub">Tous les motifs d'irrecevabilité et de protestation formelle utilisables devant le tribunal. Chaque objection est accompagnée de sa formule orale, de sa définition et d'un exemple d'application.</div>
+    </div>
+    <div class="doc-banner-stat">
+      <div class="stat-big" id="total-count">—</div>
+      <div class="stat-label">OBJECTIONS</div>
+    </div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Rechercher une objection..." oninput="filterObjections(this.value)"/>
+    </div>
+    <div class="filter-btns">
+      <button class="filter-btn active" onclick="setFilter('all', this)">Toutes</button>
+      <button class="filter-btn" onclick="setFilter('recevabilite', this)">Recevabilité</button>
+      <button class="filter-btn" onclick="setFilter('forme', this)">Forme</button>
+      <button class="filter-btn" onclick="setFilter('fond', this)">Fond</button>
+      <button class="filter-btn" onclick="setFilter('comportement', this)">Comportement</button>
+      <button class="filter-btn" onclick="setFilter('temoignage', this)">Témoignage</button>
+    </div>
+  </div>
+
+  <div id="content"></div>
+</div>
+
+<script>
+const OBJECTIONS = [
+  // ── RECEVABILITÉ ──
+  {
+    cat:'recevabilite', catLabel:'Recevabilité de la preuve',
+    name:'Ouï-dire', trigger:'Objection — ouï-dire',
+    def:'Le témoin rapporte une déclaration faite hors audience par une personne absente, présentée comme preuve de la vérité de son contenu. Irrecevable sauf exceptions légales.',
+    example:'« L\'officier témoigne de ce que la voisine lui aurait déclaré le soir des faits. »',
+    sustained:'Accordée si la déclaration est rapportée comme preuve de sa vérité par un tiers absent.',
+    overruled:'Rejetée si la déclaration entre dans une exception légale (déclaration mourante, aveu, etc.).'
+  },
+  {
+    cat:'recevabilite', catLabel:'Recevabilité de la preuve',
+    name:'Preuve obtenue illégalement', trigger:'Objection — preuve illicitement obtenue',
+    def:'La preuve a été recueillie en violation des droits constitutionnels du prévenu : perquisition sans mandat, aveu arraché sous la contrainte, interception irrégulière.',
+    example:'« L\'arme a été saisie lors d\'une perquisition effectuée sans mandat valide. »',
+    sustained:'Accordée si l\'irrégularité est établie — la preuve est exclue du dossier.',
+    overruled:'Rejetée si la perquisition était légale ou si l\'exception de bonne foi s\'applique.'
+  },
+  {
+    cat:'recevabilite', catLabel:'Recevabilité de la preuve',
+    name:'Absence de base suffisante', trigger:'Objection — absence de fondement',
+    def:'La partie qui produit une preuve n\'a pas préalablement établi les conditions nécessaires à son authenticité ou à sa pertinence (chaîne de possession, identité, contexte).',
+    example:'« Le document est produit sans que son auteur ou son origine n\'aient été établis. »',
+    sustained:'Accordée si les éléments d\'authentification préalable font défaut.',
+    overruled:'Rejetée une fois la base probatoire dûment établie.'
+  },
+  {
+    cat:'recevabilite', catLabel:'Recevabilité de la preuve',
+    name:'Meilleure preuve disponible', trigger:'Objection — document original requis',
+    def:'Lorsqu\'une partie cherche à prouver le contenu d\'un écrit, d\'un enregistrement ou d\'une photographie, c\'est l\'original qui doit être produit, sauf impossibilité dûment justifiée.',
+    example:'« Une photocopie du contrat est produite alors que l\'original n\'est pas introuvable. »',
+    sustained:'Accordée si l\'original existe et est disponible.',
+    overruled:'Rejetée si l\'original a été détruit ou est inaccessible sans faute de la partie.'
+  },
+  // ── FORME ──
+  {
+    cat:'forme', catLabel:'Forme et formulation des questions',
+    name:'Question suggestive', trigger:'Objection — question suggestive',
+    def:'La question contient en elle-même la réponse souhaitée ou suggère fortement une réponse déterminée. Irrecevable lors de l\'interrogatoire des propres témoins (audition principale).',
+    example:'« N\'est-ce pas que vous étiez bien à l\'angle de la rue à 22h00 ? »',
+    sustained:'Accordée lors de l\'audition principale des propres témoins.',
+    overruled:'Rejetée lors du contre-interrogatoire, où les questions suggestives sont autorisées.'
+  },
+  {
+    cat:'forme', catLabel:'Forme et formulation des questions',
+    name:'Question composée', trigger:'Objection — question composée',
+    def:'La question contient plusieurs interrogations distinctes auxquelles il est impossible de répondre par un seul oui ou non sans ambiguïté. Crée une confusion dans le témoignage.',
+    example:'« Étiez-vous au courant et avez-vous participé à la planification et à l\'exécution ? »',
+    sustained:'Accordée — la partie doit reformuler en questions séparées.',
+    overruled:'Rejetée si les questions sont suffisamment liées pour être traitées ensemble.'
+  },
+  {
+    cat:'forme', catLabel:'Forme et formulation des questions',
+    name:'Présupposition de faits non établis', trigger:'Objection — présupposition de fait',
+    def:'La question intègre comme acquis un fait qui n\'a pas encore été prouvé ni admis lors des débats, induisant ainsi le tribunal en erreur.',
+    example:'« Depuis combien de temps étiez-vous associé à l\'organisation criminelle ? »',
+    sustained:'Accordée si le fait présupposé n\'a pas été établi par ailleurs dans les débats.',
+    overruled:'Rejetée si le fait a déjà été établi ou n\'est pas contesté.'
+  },
+  {
+    cat:'forme', catLabel:'Forme et formulation des questions',
+    name:'Question vague ou imprécise', trigger:'Objection — question imprécise',
+    def:'La question est tellement vague, ambiguë ou générale qu\'elle ne permet pas au témoin de comprendre ce qui lui est demandé ni d\'y répondre de façon précise et utile.',
+    example:'« Parlez-nous un peu de cette nuit-là, en général. »',
+    sustained:'Accordée si la question est trop vague pour obtenir une réponse utile.',
+    overruled:'Rejetée si le contexte suffit à la rendre compréhensible.'
+  },
+  // ── FOND ──
+  {
+    cat:'fond', catLabel:'Pertinence et fond',
+    name:'Non-pertinence', trigger:'Objection — non-pertinence',
+    def:'La preuve ou la question n\'a aucun lien logique avec les faits en litige dans cette affaire. Toute preuve doit être pertinente pour être recevable.',
+    example:'« L\'avocat produit les antécédents professionnels du prévenu, sans lien avec les faits. »',
+    sustained:'Accordée si la preuve est sans rapport avec les faits de la cause.',
+    overruled:'Rejetée si un lien, même indirect, avec les faits en litige est établi.'
+  },
+  {
+    cat:'fond', catLabel:'Pertinence et fond',
+    name:'Préjudice disproportionné', trigger:'Objection — effet préjudiciable excessif',
+    def:'Bien que pertinente, la preuve est susceptible de créer dans l\'esprit des jurés un préjugé tel que son effet préjudiciable l\'emporte substantiellement sur sa valeur probante.',
+    example:'« Des photographies particulièrement choquantes sont présentées alors que les faits sont admis. »',
+    sustained:'Accordée si l\'effet émotionnel dépasse clairement la valeur de preuve.',
+    overruled:'Rejetée si la preuve est nécessaire à la démonstration des faits.'
+  },
+  {
+    cat:'fond', catLabel:'Pertinence et fond',
+    name:'Caractère spéculatif', trigger:'Objection — spéculation',
+    def:'La question invite le témoin à donner son avis, à émettre une hypothèse ou à supposer des faits qui ne sont pas de sa connaissance directe et personnelle.',
+    example:'« À votre avis, pourquoi pensez-vous que le prévenu se serait comporté ainsi ? »',
+    sustained:'Accordée si le témoin est invité à conjecturer au-delà de ce qu\'il a directement perçu.',
+    overruled:'Rejetée pour les experts expressément habilités à émettre des opinions spécialisées.'
+  },
+  {
+    cat:'fond', catLabel:'Pertinence et fond',
+    name:'Preuve de caractère irrecevable', trigger:'Objection — preuve de caractère inadmissible',
+    def:'L\'accusation tente de prouver la culpabilité de l\'accusé en se fondant sur ses comportements passés ou sa mauvaise réputation générale plutôt que sur les faits reprochés.',
+    example:'« Le procureur évoque les condamnations antérieures pour en inférer la culpabilité actuelle. »',
+    sustained:'Accordée si les antécédents sont utilisés pour établir la propension à commettre des infractions.',
+    overruled:'Rejetée si utilisée pour prouver l\'intention, le mobile ou le mode opératoire.'
+  },
+  // ── COMPORTEMENT ──
+  {
+    cat:'comportement', catLabel:'Comportement et conduite',
+    name:'Pression ou harcèlement du témoin', trigger:'Objection — harcèlement du témoin',
+    def:'L\'avocat adopte une attitude intimidante, agressive ou irrespectueuse envers le témoin, dépassant les limites d\'un contre-interrogatoire vigoureux mais loyal.',
+    example:'« Le conseil répète la même question sur un ton menaçant malgré la réponse déjà donnée. »',
+    sustained:'Accordée si l\'attitude dépasse les limites du contre-interrogatoire admissible.',
+    overruled:'Rejetée si le ton est ferme mais reste dans les limites de la procédure.'
+  },
+  {
+    cat:'comportement', catLabel:'Comportement et conduite',
+    name:'Question de type plaidoirie', trigger:'Objection — plaidoirie déguisée',
+    def:'Sous couvert de poser une question, l\'avocat expose en réalité ses propres conclusions ou développe son argumentaire, empiétant sur le temps réservé aux plaidoiries.',
+    example:'« Ne pensez-vous pas que les preuves démontrent clairement que l\'accusé est coupable ? »',
+    sustained:'Accordée — l\'avocat doit réserver son argumentation aux plaidoiries.',
+    overruled:'Rejetée si la question demande bien une information factuelle ou un avis d\'expert.'
+  },
+  {
+    cat:'comportement', catLabel:'Comportement et conduite',
+    name:'Question déjà répondue', trigger:'Objection — question déjà répondue',
+    def:'La partie répète une question à laquelle le témoin a déjà clairement répondu, cherchant à obtenir une réponse différente ou à influencer le témoignage par la répétition.',
+    example:'« Le défenseur pose pour la troisième fois la même question sur l\'heure des faits. »',
+    sustained:'Accordée si une réponse claire et complète a déjà été donnée.',
+    overruled:'Rejetée si la formulation est réellement différente ou si une clarification s\'impose.'
+  },
+  {
+    cat:'comportement', catLabel:'Comportement et conduite',
+    name:'Propos irrespectueux', trigger:'Objection — manque de déférence au tribunal',
+    def:'L\'avocat ou une partie adopte un comportement, des propos ou une attitude contraires à la dignité de l\'audience et au respect dû au tribunal.',
+    example:'« Le conseil tient des propos sarcastiques à l\'adresse du juge ou de la partie adverse. »',
+    sustained:'Accordée — le tribunal peut ordonner le rappel à l\'ordre ou des sanctions.',
+    overruled:'Rejetée si les propos s\'inscrivent dans le cadre d\'une défense vigoureuse mais loyale.'
+  },
+  // ── TÉMOIGNAGE ──
+  {
+    cat:'temoignage', catLabel:'Témoignage et experts',
+    name:'Opinion d\'un non-expert', trigger:'Objection — témoignage d\'opinion irrecevable',
+    def:'Un témoin ordinaire (non expert) exprime une opinion ou porte un jugement qui dépasse la simple description de ce qu\'il a directement perçu par ses sens.',
+    example:'« Le témoin affirme que la conduite du prévenu démontrait l\'intention de tuer. »',
+    sustained:'Accordée si le témoin n\'est pas qualifié comme expert dans le domaine concerné.',
+    overruled:'Rejetée pour les opinions rationnellement fondées sur la perception directe du témoin.'
+  },
+  {
+    cat:'temoignage', catLabel:'Témoignage et experts',
+    name:'Dépassement de compétence de l\'expert', trigger:'Objection — dépassement d\'expertise',
+    def:'L\'expert s\'exprime sur des questions qui sortent du domaine spécifique pour lequel il a été qualifié et accrédité par le tribunal dans la présente affaire.',
+    example:'« Le médecin légiste donne un avis sur des questions balistiques sans y avoir été qualifié. »',
+    sustained:'Accordée si la question excède le champ d\'expertise pour lequel le témoin est accrédité.',
+    overruled:'Rejetée si la question entre bien dans le domaine d\'expertise reconnu à l\'expert.'
+  },
+  {
+    cat:'temoignage', catLabel:'Témoignage et experts',
+    name:'Défaut de connaissance personnelle', trigger:'Objection — absence de connaissance directe',
+    def:'Le témoin s\'exprime sur des faits qu\'il n\'a pas personnellement et directement perçus : il rapporte ce que d\'autres lui ont dit ou ce qu\'il a lu, sans en avoir été lui-même le témoin.',
+    example:'« L\'agent témoigne de ce que son collègue aurait constaté sur les lieux avant son arrivée. »',
+    sustained:'Accordée si le témoin n\'avait pas de perception directe des faits évoqués.',
+    overruled:'Rejetée si le témoin a effectivement perçu les faits par ses propres sens.'
+  },
+  {
+    cat:'temoignage', catLabel:'Témoignage et experts',
+    name:'Violation du secret professionnel', trigger:'Objection — secret professionnel',
+    def:'La question porte sur des échanges protégés par le secret professionnel (avocat-client, médecin-patient, prêtre-pénitent) ou par le privilège conjugal. Ces communications sont irrecevables.',
+    example:'« Le procureur interroge un avocat sur les confidences de son ancien client. »',
+    sustained:'Accordée si la communication entre bien dans le champ d\'une protection légale reconnue.',
+    overruled:'Rejetée si le titulaire du privilège y a expressément renoncé.'
+  },
+];
+
+const CAT_STYLES = {
+  recevabilite:{ label:'Recevabilité', icon:'🚫', color:'var(--red)', bg:'var(--red-lt)' },
+  forme:{ label:'Forme', icon:'📝', color:'var(--orange)', bg:'var(--orange-lt)' },
+  fond:{ label:'Fond', icon:'⚖️', color:'var(--blue-mid)', bg:'var(--blue-lt)' },
+  comportement:{ label:'Comportement', icon:'🔇', color:'#9b59b6', bg:'#f5eef8' },
+  temoignage:{ label:'Témoignage', icon:'👤', color:'var(--green)', bg:'var(--green-lt)' },
+};
+
+let currentFilter = 'all';
+let currentSearch = '';
+
+document.getElementById('total-count').textContent = OBJECTIONS.length;
+
+function setFilter(cat, btn) {
+  currentFilter = cat;
+  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+}
+
+function filterObjections(q) {
+  currentSearch = q;
+  render();
+}
+
+function render() {
+  const q = currentSearch.toLowerCase().trim();
+  const filtered = OBJECTIONS.filter(o => {
+    const matchCat = currentFilter === 'all' || o.cat === currentFilter;
+    const matchSearch = !q || o.name.toLowerCase().includes(q) || o.def.toLowerCase().includes(q) || o.trigger.toLowerCase().includes(q);
+    return matchCat && matchSearch;
+  });
+
+  if (!filtered.length) {
+    document.getElementById('content').innerHTML = `<div class="no-results"><div style="font-size:36px;margin-bottom:10px">🚫</div><div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px">Aucune objection trouvée</div></div>`;
+    return;
+  }
+
+  // Group by cat
+  const cats = currentFilter === 'all'
+    ? [...new Set(filtered.map(o => o.cat))]
+    : [currentFilter];
+
+  let html = '';
+  cats.forEach(cat => {
+    const items = filtered.filter(o => o.cat === cat);
+    if (!items.length) return;
+    const style = CAT_STYLES[cat];
+    html += `
+      <div class="categories-section">
+        <div class="cat-header">
+          <span class="cat-icon">${style.icon}</span>
+          <span class="cat-title">${style.label}</span>
+          <span class="cat-count">${items.length} objection${items.length > 1 ? 's' : ''}</span>
+        </div>
+        <div class="obj-grid">
+          ${items.map((o, idx) => {
+            const nameHl = q ? highlight(o.name, q) : o.name;
+            const defHl = q ? highlight(o.def, q) : o.def;
+            const triggerHl = q ? highlight(o.trigger, q) : o.trigger;
+            return `
+              <div class="obj-card">
+                <div class="obj-card-top ${cat}">
+                  <div class="obj-num">${String(idx+1).padStart(2,'0')} · ${style.label.toUpperCase()}</div>
+                  <div class="obj-name">${nameHl}</div>
+                  <div class="obj-trigger">${triggerHl}</div>
+                </div>
+                <div class="obj-body">
+                  <div class="obj-def">${defHl}</div>
+                  <div class="obj-example">${o.example}</div>
+                  <div class="obj-sustained">✓ Accordée : ${o.sustained}</div>
+                  <div class="obj-overruled">✕ Rejetée : ${o.overruled}</div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>
+      </div>`;
+  });
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function highlight(text, q) {
+  if (!q) return text;
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+}
+
+render();
+
+setInterval(() => {
+  const el = document.getElementById('clock');
+  if (el) el.textContent = new Date().toLocaleTimeString('fr-FR');
+}, 1000);
+</script>
+</body>
+</html>

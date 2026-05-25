@@ -642,42 +642,87 @@ function buildResources() {
   const container = document.getElementById('resources-content');
   let html = '';
 
+  // ── Code Pénal : accessible à TOUS les rôles ──
+  html += `
+    <div class="card">
+      <div class="card-header"><div class="card-title">📜 Code Pénal — État de San Andreas</div></div>
+      <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+        <div onclick="window.location.href='code-penal.html'" style="padding:16px;background:var(--navy);border-radius:var(--radius);cursor:pointer;transition:all .2s;grid-column:1/-1;display:flex;align-items:center;gap:16px;" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
+          <div style="font-size:32px;">⚖️</div>
+          <div>
+            <div style="font-weight:700;font-size:15px;color:white;margin-bottom:3px;">Consulter le Code Pénal complet</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);">9 Livres · 98 Articles · Recherche intégrée — Édition révisée 2024</div>
+          </div>
+          <div style="margin-left:auto;font-size:13px;font-weight:600;color:var(--gold);">Accéder →</div>
+        </div>
+      </div>
+    </div>`;
+
+  // ── Ressources DOJ ──
   if (DOJ_RESOURCES.includes(profile.role)) {
+    const dojItems = [
+      { icon:'📖', title:'Glossaire juridique complet', desc:'Définitions officielles de tous les termes judiciaires', href:'glossaire.html' },
+      { icon:'🔔', title:'Notification des droits de l\'accusé', desc:'Texte officiel et règles d\'application lors d\'une garde à vue', href:'ressource-miranda.html' },
+      { icon:'⚖️', title:'Règle de divulgation des preuves', desc:'Obligations de communication et divulgation à la défense', href:'' },
+      { icon:'📊', title:'Tableau de classification des infractions', desc:'Crimes, délits, contraventions — classes et peines', href:'code-penal.html#book-0' },
+      { icon:'✅', title:'Checklist pré-audience', desc:'Liste de vérification complète avant une audience', href:'' },
+      { icon:'🚫', title:'Catalogue des motifs d\'objection', desc:'Tous les motifs d\'irrecevabilité et de protestation formelle', href:'objections.html' },
+    ];
     html += `
       <div class="card">
         <div class="card-header"><div class="card-title">🏛️ Ressources DOJ</div></div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
-          ${[
-            ['📖','Guide complet ADA','Procédures, vocabulaire, stratégies'],
-            ['🗣️','Droits Miranda','Texte officiel et règles d\'application'],
-            ['⚖️','Règle Brady','Obligations de divulgation'],
-            ['📊','Tableau des infractions','Classification et peines'],
-            ['✅','Checklist pré-procès','Liste de vérification complète'],
-            ['🚫','Liste des objections','Tous les motifs d\'objection'],
-          ].map(([i,t,d]) => `
-            <div style="padding:14px;background:var(--gray-1);border-radius:var(--radius);cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--blue-lt)'" onmouseout="this.style.background='var(--gray-1)'">
-              <div style="font-size:20px;margin-bottom:6px;">${i}</div>
-              <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:2px;">${t}</div>
-              <div style="font-size:12px;color:var(--gray-4);">${d}</div>
+          ${dojItems.map(item => `
+            <div onclick="${item.href ? `window.location.href='${item.href}'` : ''}" style="padding:14px;background:var(--gray-1);border-radius:var(--radius);cursor:${item.href ? 'pointer' : 'default'};transition:background .15s;position:relative;" onmouseover="this.style.background='var(--blue-lt)'" onmouseout="this.style.background='var(--gray-1)'">
+              <div style="font-size:22px;margin-bottom:7px;">${item.icon}</div>
+              <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:3px;">${item.title}</div>
+              <div style="font-size:12px;color:var(--gray-4);line-height:1.5;">${item.desc}</div>
+              ${!item.href ? '<div style="margin-top:6px;font-size:10px;color:var(--gray-3);font-family:var(--font-mono)">BIENTÔT DISPONIBLE</div>' : ''}
             </div>
           `).join('')}
         </div>
       </div>`;
   }
 
+  // ── Ressources Cour ──
   if (COUR_RESOURCES.includes(profile.role)) {
+    const courItems = [
+      { icon:'📖', title:'Glossaire juridique complet', desc:'Définitions officielles de tous les termes judiciaires', href:'glossaire.html' },
+      { icon:'🏛️', title:'Procédures d\'audience', desc:'Déroulement officiel d\'un procès, étapes et rôles', href:'' },
+      { icon:'👨‍⚖️', title:'Code de conduite judiciaire', desc:'Règles de déontologie, protocole d\'audience et décorum', href:'' },
+      { icon:'🚫', title:'Catalogue des motifs d\'objection', desc:'Tous les motifs d\'irrecevabilité et de protestation formelle', href:'objections.html' },
+    ];
     html += `
       <div class="card">
         <div class="card-header"><div class="card-title">⚖️ Ressources Cour</div></div>
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+          ${courItems.map(item => `
+            <div onclick="${item.href ? `window.location.href='${item.href}'` : ''}" style="padding:14px;background:var(--gray-1);border-radius:var(--radius);cursor:${item.href ? 'pointer' : 'default'};transition:background .15s;" onmouseover="this.style.background='var(--blue-lt)'" onmouseout="this.style.background='var(--gray-1)'">
+              <div style="font-size:22px;margin-bottom:7px;">${item.icon}</div>
+              <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:3px;">${item.title}</div>
+              <div style="font-size:12px;color:var(--gray-4);line-height:1.5;">${item.desc}</div>
+              ${!item.href ? '<div style="margin-top:6px;font-size:10px;color:var(--gray-3);font-family:var(--font-mono)">BIENTÔT DISPONIBLE</div>' : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  // ── Ressources SASP ──
+  if (profile.department === 'sasp') {
+    html += `
+      <div class="card">
+        <div class="card-header"><div class="card-title">🚔 Ressources SASP</div></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
           ${[
-            ['📜','Procédures judiciaires','Déroulement d\'un procès'],
-            ['👨‍⚖️','Code de conduite','Règles d\'audience et protocole'],
-          ].map(([i,t,d]) => `
-            <div style="padding:14px;background:var(--gray-1);border-radius:var(--radius);cursor:pointer;">
-              <div style="font-size:20px;margin-bottom:6px;">${i}</div>
-              <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:2px;">${t}</div>
-              <div style="font-size:12px;color:var(--gray-4);">${d}</div>
+            { icon:'🔔', title:'Notification des droits de l\'accusé', desc:'Texte officiel et procédure d\'application lors d\'une arrestation', href:'' },
+            { icon:'📋', title:'Tableau des infractions routières', desc:'Classification des infractions au code de la route et peines', href:'code-penal.html' },
+          ].map(item => `
+            <div onclick="${item.href ? `window.location.href='${item.href}'` : ''}" style="padding:14px;background:var(--gray-1);border-radius:var(--radius);cursor:${item.href ? 'pointer' : 'default'};transition:background .15s;" onmouseover="this.style.background='var(--green-lt)'" onmouseout="this.style.background='var(--gray-1)'">
+              <div style="font-size:22px;margin-bottom:7px;">${item.icon}</div>
+              <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:3px;">${item.title}</div>
+              <div style="font-size:12px;color:var(--gray-4);line-height:1.5;">${item.desc}</div>
+              ${!item.href ? '<div style="margin-top:6px;font-size:10px;color:var(--gray-3);font-family:var(--font-mono)">BIENTÔT DISPONIBLE</div>' : ''}
             </div>
           `).join('')}
         </div>

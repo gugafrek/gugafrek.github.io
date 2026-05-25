@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Glossaire Juridique — DOJ San Andreas</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0A1628;--navy-mid:#112240;--blue:#1a3a6e;--blue-mid:#2251a3;--blue-lt:#E8F0FA;
+  --gold:#c9a84c;--gold-lt:#e8c96a;--gold-dim:rgba(201,168,76,0.12);
+  --white:#fff;--gray-1:#f8f8f6;--gray-2:#ebebeb;--gray-3:#aaa;--gray-4:#666;--gray-dk:#1a1a1a;
+  --red:#c0392b;--red-lt:#fdeaea;--green:#27ae60;--green-lt:#eafaf1;
+  --font-serif:'Playfair Display',Georgia,serif;
+  --font-sans:'Libre Franklin',sans-serif;
+  --font-mono:'IBM Plex Mono',monospace;
+  --radius:6px;
+}
+html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);color:var(--gray-dk);}
+.topbar{background:var(--navy);font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.4);padding:5px 24px;display:flex;justify-content:space-between;}
+.topnav{background:var(--navy-mid);border-bottom:1px solid rgba(201,168,76,0.25);position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,0.3);}
+.topnav-inner{max-width:1100px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:10px;height:56px;}
+.nav-logo{font-family:var(--font-serif);font-size:15px;color:var(--white);font-weight:700;display:flex;align-items:center;gap:10px;text-decoration:none;}
+.nav-logo .seal{width:30px;height:30px;border:1.5px solid var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--gold);font-weight:900;}
+.nav-logo span{color:var(--gold);}
+.back-btn{color:rgba(255,255,255,0.6);text-decoration:none;font-size:13px;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:var(--radius);transition:all .2s;}
+.back-btn:hover{color:white;background:rgba(255,255,255,0.08);}
+.nav-title{font-family:var(--font-mono);font-size:11px;color:var(--gold);letter-spacing:.1em;text-transform:uppercase;margin-left:auto;}
+.page{max-width:1100px;margin:0 auto;padding:28px 24px;}
+.doc-banner{background:var(--navy);color:white;padding:24px 32px;border-radius:8px;margin-bottom:24px;position:relative;overflow:hidden;}
+.doc-banner::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 50% 70% at 80% 50%,rgba(201,168,76,0.08) 0%,transparent 70%);}
+.doc-banner-eyebrow{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.14em;text-transform:uppercase;margin-bottom:8px;}
+.doc-banner-title{font-family:var(--font-serif);font-size:26px;font-weight:900;margin-bottom:6px;}
+.doc-banner-sub{font-size:13px;color:rgba(255,255,255,0.5);}
+.toolbar{display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap;}
+.search-wrap{position:relative;flex:1;min-width:200px;}
+.search-wrap input{width:100%;padding:11px 16px 11px 40px;border:1.5px solid var(--gray-2);border-radius:8px;font-size:13.5px;font-family:var(--font-sans);outline:none;background:var(--white);box-shadow:0 1px 4px rgba(0,0,0,0.04);}
+.search-wrap input:focus{border-color:var(--blue-mid);}
+.search-icon{position:absolute;left:13px;top:50%;transform:translateY(-50%);font-size:15px;color:var(--gray-3);}
+.alpha-bar{display:flex;gap:3px;flex-wrap:wrap;}
+.alpha-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:4px;font-family:var(--font-mono);font-size:11px;font-weight:600;cursor:pointer;border:1.5px solid var(--gray-2);background:var(--white);color:var(--gray-4);transition:all .15s;}
+.alpha-btn:hover,.alpha-btn.active{background:var(--navy);color:white;border-color:var(--navy);}
+.alpha-btn.has-entries{border-color:var(--blue-mid);color:var(--blue-mid);}
+.alpha-btn.has-entries:hover,.alpha-btn.has-entries.active{background:var(--blue-mid);color:white;}
+.count-bar{font-family:var(--font-mono);font-size:11px;color:var(--gray-3);display:flex;align-items:center;gap:6px;}
+.letter-group{margin-bottom:20px;}
+.letter-header{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.letter-char{font-family:var(--font-serif);font-size:32px;font-weight:900;color:var(--navy);width:44px;flex-shrink:0;}
+.letter-line{flex:1;height:1px;background:var(--gray-2);}
+.entries-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:0;background:var(--white);border:1px solid var(--gray-2);border-radius:8px;overflow:hidden;}
+.entry{padding:14px 18px;border-bottom:1px solid var(--gray-2);border-right:1px solid var(--gray-2);transition:background .15s;}
+.entry:hover{background:var(--blue-lt);}
+.entry:nth-child(even){border-right:none;}
+.entry.odd-last{grid-column:1/-1;border-right:none;}
+.entry-term{font-family:var(--font-mono);font-size:12px;font-weight:600;color:var(--navy);margin-bottom:5px;display:flex;align-items:center;gap:6px;}
+.entry-badge{font-size:9px;padding:2px 6px;border-radius:3px;font-weight:600;letter-spacing:.04em;}
+.badge-proc{background:var(--blue-lt);color:var(--blue-mid);}
+.badge-penal{background:var(--red-lt);color:var(--red);}
+.badge-droit{background:var(--gold-dim);color:#8a6a1a;}
+.entry-def{font-size:12.5px;color:var(--gray-4);line-height:1.65;}
+.no-results{padding:40px;text-align:center;background:var(--white);border-radius:8px;border:1px solid var(--gray-2);color:var(--gray-3);}
+mark{background:#fff3a3;border-radius:2px;padding:0 1px;}
+@media(max-width:700px){.entries-grid{grid-template-columns:1fr;}.entry{border-right:none;}.alpha-bar{display:none;}}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <span>DOJ PORTAL — SAN ANDREAS // PORTAIL SÉCURISÉ</span>
+  <span id="clock"></span>
+</div>
+<nav class="topnav">
+  <div class="topnav-inner">
+    <a class="nav-logo" href="dashboard.html">
+      <div class="seal">DA</div>
+      <div>DOJ <span>Portal</span></div>
+    </a>
+    <a class="back-btn" href="dashboard.html">← Tableau de bord</a>
+    <span class="nav-title">Glossaire Juridique</span>
+  </div>
+</nav>
+
+<div class="page">
+  <div class="doc-banner">
+    <div class="doc-banner-eyebrow">Ressource officielle · Département de Justice</div>
+    <div class="doc-banner-title">Glossaire Juridique Complet</div>
+    <div class="doc-banner-sub">Définitions officielles des termes de droit pénal, de procédure et de vocabulaire judiciaire utilisés dans les tribunaux de San Andreas.</div>
+  </div>
+
+  <div class="toolbar">
+    <div class="search-wrap">
+      <span class="search-icon">🔍</span>
+      <input type="text" id="search-input" placeholder="Rechercher un terme..." oninput="filterGlossary(this.value)"/>
+    </div>
+    <div class="alpha-bar" id="alpha-bar"></div>
+    <div class="count-bar" id="count-bar"></div>
+  </div>
+
+  <div id="glossary-content"></div>
+</div>
+
+<script>
+const GLOSSARY = [
+  // A
+  { term:'Acquittement', def:'Verdict de « non coupable » prononcé par le tribunal. Le prévenu est libéré et ne peut être rejugé pour la même infraction (protection contre la double incrimination).', cat:'penal' },
+  { term:'Acte Matériel', def:'L\'élément physique ou l\'omission illégale qui constitue la composante objective d\'une infraction pénale. Doit être prouvé indépendamment de l\'intention.', cat:'penal' },
+  { term:'Accord de Plaidoyer', def:'Accord négocié entre le procureur et le prévenu par lequel ce dernier accepte de plaider coupable en échange de concessions sur les charges ou la peine.', cat:'proc' },
+  { term:'Amende', def:'Sanction pécuniaire imposée par décision judiciaire à titre de peine principale ou complémentaire, dont le montant varie selon la classe de l\'infraction.', cat:'penal' },
+  { term:'Appel', def:'Voie de recours permettant à une partie de contester une décision judiciaire devant une juridiction supérieure. Doit être formé dans les délais légaux.', cat:'proc' },
+  { term:'Arrestation', def:'Acte par lequel les forces de l\'ordre privent un individu de sa liberté de mouvement sur la base de motifs raisonnables de le soupçonner d\'une infraction.', cat:'proc' },
+  { term:'Assistance Judiciaire', def:'Désignation d\'un avocat par l\'État pour représenter un prévenu n\'ayant pas les moyens financiers de se payer un conseil juridique.', cat:'droit' },
+  { term:'Au-delà de tout doute raisonnable', def:'Standard de preuve le plus élevé requis pour toute condamnation pénale. L\'accusation doit écarter tout doute raisonnable quant à la culpabilité du prévenu.', cat:'proc' },
+  // B
+  { term:'Base de preuve suffisante', def:'Fondements factuels minimaux nécessaires pour qu\'une preuve ou un témoignage soit admis devant le tribunal. Condition préalable à toute production de preuve.', cat:'proc' },
+  // C
+  { term:'Caution', def:'Somme d\'argent ou bien déposé auprès du tribunal pour garantir la comparution du prévenu à son audience, en échange de sa libération provisoire.', cat:'proc' },
+  { term:'Charge', def:'Allégation formelle qu\'une personne déterminée a commis une infraction pénale précise, telle qu\'elle figure dans l\'acte d\'inculpation.', cat:'proc' },
+  { term:'Circonstance aggravante', def:'Élément de fait qui accroît la gravité de l\'infraction et peut entraîner une majoration de la peine (préméditation, récidive, vulnérabilité de la victime…).', cat:'penal' },
+  { term:'Circonstance atténuante', def:'Élément de fait qui diminue la responsabilité pénale du prévenu et peut conduire le juge à prononcer une peine inférieure au maximum légal.', cat:'penal' },
+  { term:'Complicité', def:'Participation à la commission d\'une infraction par voie d\'aide, d\'encouragement, de conseil ou d\'instigation, sans avoir commis personnellement l\'acte principal.', cat:'penal' },
+  { term:'Complot', def:'Accord conclu entre deux personnes ou plus pour commettre ensemble une infraction pénale, accompagné d\'un acte manifeste démontrant le commencement d\'exécution.', cat:'penal' },
+  { term:'Condamnation', def:'Décision judiciaire définitive déclarant une personne coupable d\'une infraction pénale et prononçant une peine à son encontre.', cat:'penal' },
+  { term:'Corps du délit', def:'L\'ensemble des éléments factuels établissant qu\'une infraction a effectivement été commise. Doit être prouvé avant que la culpabilité d\'un accusé puisse être établie.', cat:'penal' },
+  { term:'Crime', def:'Infraction pénale grave passible d\'une peine d\'emprisonnement supérieure à un an. Les crimes sont classés de A (plus grave) à D (moins grave).', cat:'penal' },
+  { term:'Contravention', def:'Infraction mineure passible uniquement d\'une amende, sans emprisonnement. Constitue la catégorie d\'infraction la moins grave dans la classification pénale.', cat:'penal' },
+  // D
+  { term:'Délibéré', def:'Caractère d\'un acte accompli avec conscience et réflexion préalable, élément constitutif du meurtre au premier degré distingué du meurtre commis sous l\'impulsion.', cat:'penal' },
+  { term:'Délit', def:'Infraction pénale de gravité intermédiaire, passible d\'une peine d\'emprisonnement n\'excédant pas un an. Classés de A (plus grave) à C (moins grave).', cat:'penal' },
+  { term:'Détention provisoire', def:'Incarcération d\'un prévenu avant son jugement, ordonnée par le tribunal lorsque les conditions de la liberté sous caution ne sont pas réunies.', cat:'proc' },
+  { term:'Divulgation des preuves', def:'Obligation faite au ministère public de communiquer à la défense toute preuve en sa possession, y compris les éléments à décharge (règle de divulgation obligatoire).', cat:'proc' },
+  { term:'Double incrimination', def:'Principe constitutionnel selon lequel nul ne peut être poursuivi ni condamné deux fois pour les mêmes faits. Toute nouvelle poursuite est irrecevable après acquittement ou condamnation définitive.', cat:'droit' },
+  // E
+  { term:'Élément intentionnel', def:'La composante psychologique d\'une infraction : l\'intention criminelle, la connaissance, l\'imprudence ou la négligence. Doit être prouvée avec l\'acte matériel pour constituer l\'infraction.', cat:'penal' },
+  { term:'Exclusion de preuve', def:'Décision judiciaire écartant une preuve obtenue en violation des droits constitutionnels du prévenu, notamment lors d\'une perquisition ou d\'un interrogatoire irréguliers.', cat:'proc' },
+  { term:'Extradition', def:'Procédure formelle de transfert d\'un individu d\'une juridiction vers une autre afin qu\'il soit poursuivi, jugé ou purge une peine prononcée contre lui.', cat:'proc' },
+  // G
+  { term:'Garde à vue', def:'Mesure de rétention provisoire d\'une personne par les forces de l\'ordre aux fins d\'interrogatoire. Durée limitée par la loi avec obligation de notification des droits.', cat:'proc' },
+  { term:'Grand jury', def:'Organe composé de citoyens chargé d\'examiner les preuves présentées par le ministère public pour décider s\'il existe des charges suffisantes pour renvoyer un prévenu en jugement.', cat:'proc' },
+  // H
+  { term:'Présomption d\'innocence', def:'Principe fondamental selon lequel tout accusé est réputé innocent jusqu\'à ce que sa culpabilité soit établie au-delà de tout doute raisonnable par une décision judiciaire définitive.', cat:'droit' },
+  { term:'Habeas Corpus', def:'Recours juridictionnel permettant à toute personne détenue de contester devant un tribunal la légalité de son incarcération et d\'obtenir sa libération si elle est illégale.', cat:'droit' },
+  // I
+  { term:'Inculpation', def:'Mise en examen formelle d\'un individu, consistant à lui notifier officiellement les charges retenues contre lui et à le placer sous statut de prévenu.', cat:'proc' },
+  { term:'Instruction', def:'Phase préparatoire du procès pénal au cours de laquelle les preuves sont rassemblées, les témoins entendus et les charges définitivement arrêtées.', cat:'proc' },
+  // J
+  { term:'Juridiction', def:'Compétence légale d\'un tribunal à connaître et à trancher une affaire déterminée, selon des critères territoriaux, personnels ou liés à la nature de l\'infraction.', cat:'proc' },
+  // L
+  { term:'Liberté conditionnelle', def:'Régime de libération anticipée d\'un condamné avant l\'expiration de sa peine, sous réserve du respect de conditions strictes et d\'une surveillance judiciaire.', cat:'penal' },
+  { term:'Liberté sous caution', def:'Remise en liberté provisoire d\'un prévenu avant son jugement, moyennant le dépôt d\'une somme ou d\'une garantie assurant sa comparution à l\'audience.', cat:'proc' },
+  // M
+  { term:'Mandat', def:'Ordre écrit émanant d\'une autorité judiciaire autorisant les forces de l\'ordre à procéder à une arrestation, une perquisition ou une saisie dans les conditions qu\'il détermine.', cat:'proc' },
+  { term:'Mesure accessoire', def:'Sanction complémentaire prononcée en sus de la peine principale : confiscation, révocation de licence, interdiction de territoire, restitution aux victimes, etc.', cat:'penal' },
+  { term:'Mise en examen', def:'Audience formelle au cours de laquelle le prévenu comparaît devant le tribunal, est informé des charges et entre son plaidoyer (coupable, non coupable, sans contestation).', cat:'proc' },
+  { term:'Motifs raisonnables', def:'Fondements factuels et objectifs suffisants pour qu\'un officier de police puisse raisonnablement croire qu\'une infraction a été ou est en cours de commission.', cat:'proc' },
+  // N
+  { term:'Notification des droits', def:'Obligation légale faite aux forces de l\'ordre d\'informer toute personne placée en garde à vue de ses droits fondamentaux avant tout interrogatoire.', cat:'droit' },
+  { term:'Non-lieu', def:'Décision juridictionnelle mettant fin aux poursuites pénales en l\'absence de charges suffisantes ou en raison de l\'extinction de l\'action publique.', cat:'proc' },
+  // O
+  { term:'Ordonnance de restitution', def:'Décision judiciaire imposant au condamné de rembourser financièrement la ou les victimes de l\'infraction pour le préjudice subi.', cat:'penal' },
+  { term:'Ouï-dire', def:'Déclaration rapportée par un témoin dont la source est une personne absente de l\'audience. Généralement irrecevable comme preuve, sauf exceptions légalement définies.', cat:'proc' },
+  // P
+  { term:'Parjure', def:'Infraction pénale consistant à faire sciemment une fausse déclaration sous serment lors d\'une procédure judiciaire, passible d\'une peine d\'emprisonnement.', cat:'penal' },
+  { term:'Peine concurrente', def:'Mode d\'exécution des peines multiples selon lequel les condamnations se confondent : seule la peine la plus longue est effectivement purgée.', cat:'penal' },
+  { term:'Peine consécutive', def:'Mode d\'exécution des peines multiples selon lequel les condamnations s\'additionnent et sont purgées l\'une après l\'autre dans leur intégralité.', cat:'penal' },
+  { term:'Plaidoyer', def:'Réponse formelle du prévenu aux charges qui lui sont notifiées : coupable, non coupable, ou sans contestation (nolo contendere). Acte fondateur de la procédure pénale.', cat:'proc' },
+  { term:'Préméditation', def:'Intention délibérée et préalable de commettre un acte criminel, formée avant l\'exécution de l\'infraction. Élément constitutif du meurtre au premier degré.', cat:'penal' },
+  { term:'Preuve à décharge', def:'Tout élément de preuve favorable à l\'accusé, susceptible d\'écarter ou d\'atténuer sa culpabilité. Le ministère public est tenu de la communiquer à la défense.', cat:'proc' },
+  { term:'Probation', def:'Peine de substitution à l\'incarcération ou modalité d\'exécution de peine consistant en une période de surveillance en milieu ouvert assortie d\'obligations.', cat:'penal' },
+  { term:'Procureur', def:'Magistrat ou officier représentant l\'État chargé d\'exercer l\'action publique, de soutenir l\'accusation devant le tribunal et de requérir l\'application de la loi pénale.', cat:'proc' },
+  // R
+  { term:'Récidive', def:'Commission d\'une nouvelle infraction pénale par une personne déjà condamnée définitivement. Constitue une circonstance aggravante entraînant une majoration de la peine.', cat:'penal' },
+  { term:'Recours en révision', def:'Voie extraordinaire permettant de remettre en cause une condamnation définitive lorsque des éléments nouveaux établissent l\'innocence du condamné.', cat:'proc' },
+  // S
+  { term:'Standard de preuve', def:'Degré de certitude requis pour qu\'un fait soit considéré comme établi dans une procédure judiciaire. Le standard pénal est « au-delà de tout doute raisonnable ».', cat:'proc' },
+  { term:'Subpoena', def:'Injonction judiciaire contraignant une personne à comparaître comme témoin à une audience ou à produire des documents spécifiques devant le tribunal.', cat:'proc' },
+  // T
+  { term:'Tentative', def:'Commencement d\'exécution d\'une infraction interrompu par des circonstances indépendantes de la volonté de l\'auteur. Punissable comme l\'infraction consommée selon les textes.', cat:'penal' },
+  // V
+  { term:'Verdict', def:'Décision rendue par le jury ou par le juge à l\'issue des débats, se prononçant sur la culpabilité ou l\'innocence du prévenu pour chacun des chefs d\'accusation.', cat:'proc' },
+  { term:'Viciation de procédure', def:'Irrégularité grave affectant le déroulement de la procédure pénale pouvant entraîner la nullité des actes accomplis et l\'exclusion des preuves recueillies.', cat:'proc' },
+  { term:'Voir-dire', def:'Procédure de sélection et d\'examen des jurés potentiels visant à s\'assurer de leur impartialité et à récuser ceux qui pourraient avoir des préjugés dans l\'affaire.', cat:'proc' },
+];
+
+const CAT_LABELS = { proc: 'PROCÉDURE', penal: 'PÉNAL', droit: 'DROITS' };
+const CAT_CLASS = { proc: 'badge-proc', penal: 'badge-penal', droit: 'badge-droit' };
+
+let currentLetter = '';
+let currentSearch = '';
+
+function init() {
+  buildAlphaBar();
+  renderGlossary('', '');
+  setInterval(() => {
+    const el = document.getElementById('clock');
+    if (el) el.textContent = new Date().toLocaleTimeString('fr-FR');
+  }, 1000);
+}
+
+function buildAlphaBar() {
+  const letters = [...new Set(GLOSSARY.map(e => e.term[0].toUpperCase()))].sort();
+  const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const bar = document.getElementById('alpha-bar');
+  bar.innerHTML = allLetters.map(l => {
+    const hasEntries = letters.includes(l);
+    return `<button class="alpha-btn ${hasEntries ? 'has-entries' : ''}" onclick="filterByLetter('${l}')" id="alpha-${l}">${l}</button>`;
+  }).join('');
+}
+
+function filterByLetter(l) {
+  currentLetter = currentLetter === l ? '' : l;
+  document.querySelectorAll('.alpha-btn').forEach(btn => btn.classList.remove('active'));
+  if (currentLetter) document.getElementById(`alpha-${currentLetter}`)?.classList.add('active');
+  renderGlossary(currentSearch, currentLetter);
+}
+
+function filterGlossary(q) {
+  currentSearch = q;
+  currentLetter = '';
+  document.querySelectorAll('.alpha-btn').forEach(btn => btn.classList.remove('active'));
+  renderGlossary(q, '');
+}
+
+function renderGlossary(search, letter) {
+  const q = search.toLowerCase().trim();
+  const filtered = GLOSSARY.filter(e => {
+    const matchSearch = !q || e.term.toLowerCase().includes(q) || e.def.toLowerCase().includes(q);
+    const matchLetter = !letter || e.term[0].toUpperCase() === letter;
+    return matchSearch && matchLetter;
+  });
+
+  document.getElementById('count-bar').textContent = `${filtered.length} terme${filtered.length > 1 ? 's' : ''}`;
+
+  if (!filtered.length) {
+    document.getElementById('glossary-content').innerHTML = `<div class="no-results"><div style="font-size:36px;margin-bottom:10px">📖</div><div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:4px">Aucun résultat</div><div>Aucun terme ne correspond à votre recherche.</div></div>`;
+    return;
+  }
+
+  // Group by first letter
+  const grouped = {};
+  filtered.forEach(e => {
+    const l = e.term[0].toUpperCase();
+    if (!grouped[l]) grouped[l] = [];
+    grouped[l].push(e);
+  });
+
+  let html = '';
+  Object.keys(grouped).sort().forEach(l => {
+    const entries = grouped[l];
+    html += `<div class="letter-group" id="group-${l}">
+      <div class="letter-header">
+        <div class="letter-char">${l}</div>
+        <div class="letter-line"></div>
+      </div>
+      <div class="entries-grid">
+        ${entries.map((e, idx) => {
+          const isOddLast = entries.length % 2 !== 0 && idx === entries.length - 1;
+          const termHl = q ? highlight(e.term, q) : e.term;
+          const defHl = q ? highlight(e.def, q) : e.def;
+          return `<div class="entry ${isOddLast ? 'odd-last' : ''}">
+            <div class="entry-term">
+              ${termHl}
+              <span class="entry-badge ${CAT_CLASS[e.cat]}">${CAT_LABELS[e.cat]}</span>
+            </div>
+            <div class="entry-def">${defHl}</div>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+  });
+
+  document.getElementById('glossary-content').innerHTML = html;
+}
+
+function highlight(text, q) {
+  if (!q) return text;
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return text.replace(new RegExp(`(${escaped})`, 'gi'), '<mark>$1</mark>');
+}
+
+init();
+</script>
+</body>
+</html>
