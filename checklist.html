@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DOJ Portal — Checklist pré-audience</title>
+<title>DOJ Portal - Checklist pré-audience</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -124,7 +124,7 @@ html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);
 <body>
 
 <div class="topbar">
-  <div><span class="dot"></span>DOJ PORTAL — SYSTÈME JUDICIAIRE DE SAN ANDREAS</div>
+  <div><span class="dot"></span>DOJ PORTAL - SYSTÈME JUDICIAIRE DE SAN ANDREAS</div>
   <div id="top-time" style="font-family:var(--font-mono);"></div>
 </div>
 
@@ -139,8 +139,8 @@ html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);
       <div class="user-menu">
         <div class="user-avatar" id="nav-avatar" style="background:var(--blue-mid)"></div>
         <div>
-          <div class="user-name" id="nav-name">—</div>
-          <div class="user-role" id="nav-role">—</div>
+          <div class="user-name" id="nav-name">-</div>
+          <div class="user-role" id="nav-role">-</div>
         </div>
       </div>
     </div>
@@ -148,7 +148,7 @@ html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);
 </nav>
 
 <div class="page-wrap">
-  <div id="complete-banner" class="complete-banner">✅ Checklist complétée — Vous êtes prêt(e) pour l'audience !</div>
+  <div id="complete-banner" class="complete-banner">✅ Checklist complétée - Vous êtes prêt(e) pour l'audience !</div>
 
   <div class="page-header">
     <div class="page-header-left">
@@ -201,7 +201,7 @@ let checkState = {}; // { itemId: true/false }
 
 const CHECKLISTS = {
   doj: {
-    title: 'Checklist pré-audience — DOJ',
+    title: 'Checklist pré-audience - DOJ',
     sub: 'À compléter avant chaque comparution, plaidoirie ou présentation devant la Cour',
     badge: 'DÉPARTEMENT DE JUSTICE',
     sections: [
@@ -283,7 +283,7 @@ const CHECKLISTS = {
   },
 
   cour: {
-    title: 'Checklist pré-audience — Cour',
+    title: 'Checklist pré-audience - Cour',
     sub: 'À compléter avant chaque séance, délibération ou décision judiciaire',
     badge: 'COUR DE JUSTICE',
     sections: [
@@ -370,7 +370,7 @@ const ROLE_LABELS = {
   ada:'Adjoint au Procureur (ADA)', coordinateur_doj:'Coordinateur DOJ',
   assistant_juridique:'Assistant Juridique', stagiaire_doj:'Stagiaire DOJ',
   president_cour:'Président de la Cour', juge_en_chef:'Juge en Chef',
-  juge:'Juge', avocat_commis:'Avocat Commis d\'Office', sasp:'Agent SASP'
+  juge:'Juge', avocat_commis:'Avocat Commis d\'Office', avocat:'Avocat de la Défense', sasp:'Agent SASP'
 };
 const DOJ_ROLES = ['super_admin','ag','procureur_doj','ada','coordinateur_doj','assistant_juridique','stagiaire_doj'];
 const COUR_ROLES = ['super_admin','president_cour','juge_en_chef','juge','avocat_commis'];
@@ -415,13 +415,13 @@ async function init() {
   const initials = (profile.display_name || profile.full_name || 'U').split(' ').map(w => w[0]).join('').slice(0,2).toUpperCase();
   const avatar = document.getElementById('nav-avatar');
   avatar.textContent = initials;
-  avatar.style.background = profile.department === 'cour' ? 'var(--navy)' : 'var(--blue-mid)';
+  avatar.style.background = profile.department === 'cour' ? 'var(--navy)' : profile.role === 'avocat' ? '#6b21a8' : 'var(--blue-mid)';
 
   // Determine default dept from URL param or profile
   const urlDept = new URLSearchParams(window.location.search).get('dept');
   if (urlDept === 'cour' || urlDept === 'doj') {
     currentDept = urlDept;
-  } else if (profile.department === 'cour') {
+  } else if (profile.department === 'cour' || profile.role === 'avocat' || profile.role === 'avocat_commis') {
     currentDept = 'cour';
   } else {
     currentDept = 'doj';
@@ -454,7 +454,7 @@ function switchDept(dept) {
 // ─── RENDER ───────────────────────────────────────────────────────────────────
 function renderChecklist() {
   const cl = CHECKLISTS[currentDept];
-  document.title = `DOJ Portal — ${cl.title}`;
+  document.title = `DOJ Portal - ${cl.title}`;
   document.getElementById('header-badge').textContent = cl.badge;
   document.getElementById('header-title').textContent = cl.title;
   document.getElementById('header-sub').textContent = cl.sub;

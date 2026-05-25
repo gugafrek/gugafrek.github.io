@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DOJ Portal — Tableau de bord</title>
+<title>DOJ Portal - Tableau de bord</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -20,6 +20,18 @@
   --radius:6px;--shadow:0 2px 16px rgba(0,0,0,0.07);--shadow-lg:0 8px 40px rgba(0,0,0,0.14);
 }
 html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);color:var(--gray-dk);}
+
+
+/* CHAMBRE JUDICIAIRE */
+.chambre-bar{background:linear-gradient(135deg,var(--navy) 0%,#1a1060 100%);border-bottom:1px solid rgba(201,168,76,.25);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.chambre-bar-title{font-family:var(--font-mono);font-size:10px;color:var(--gold);letter-spacing:.12em;text-transform:uppercase;margin-right:6px;}
+.chambre-doc-btn{display:inline-flex;align-items:center;gap:5px;padding:5px 11px;border-radius:var(--radius);border:1px solid rgba(201,168,76,.3);background:rgba(201,168,76,.07);font-size:11px;font-weight:600;color:rgba(255,255,255,.7);cursor:pointer;font-family:var(--font-sans);transition:all .2s;white-space:nowrap;}
+.chambre-doc-btn:hover{background:rgba(201,168,76,.15);color:white;border-color:rgba(201,168,76,.5);}
+.chambre-doc-btn .wip-tag{font-size:9px;font-family:var(--font-mono);padding:1px 5px;border-radius:3px;background:rgba(230,126,34,.25);color:#f39c12;margin-left:3px;}
+.chambre-role-pill{font-size:10px;font-family:var(--font-mono);padding:3px 8px;border-radius:3px;}
+.chambre-role-acc{background:rgba(34,81,163,.15);color:var(--blue-mid);}
+.chambre-role-juge{background:rgba(192,57,43,.12);color:var(--red);}
+.chambre-msg-system{padding:10px 16px;font-size:11px;color:var(--gray-3);font-family:var(--font-mono);text-align:center;font-style:italic;}
 
 /* TOPBAR */
 .topbar{background:var(--navy);font-family:var(--font-mono);font-size:11px;color:rgba(255,255,255,0.4);padding:5px 24px;display:flex;justify-content:space-between;}
@@ -69,6 +81,7 @@ html,body{min-height:100%;font-family:var(--font-sans);background:var(--gray-1);
 .banner-cour{background:var(--red-lt);color:var(--red);border:1px solid rgba(192,57,43,0.2);}
 .banner-sasp{background:var(--green-lt);color:var(--green);border:1px solid rgba(39,174,96,0.2);}
 .banner-admin{background:var(--gold-dim);color:#8a6a1a;border:1px solid rgba(201,168,76,0.3);}
+.banner-independant{background:#f3e8ff;color:#6b21a8;border:1px solid rgba(107,33,168,0.2);}
 
 /* MAIN */
 .main-area{min-width:0;}
@@ -202,7 +215,7 @@ textarea{resize:vertical;min-height:80px;}
 </div>
 
 <div class="topbar">
-  <span>DOJ PORTAL — SAN ANDREAS // PORTAIL SÉCURISÉ</span>
+  <span>DOJ PORTAL - SAN ANDREAS // PORTAIL SÉCURISÉ</span>
   <span><span class="dot"></span><span id="clock"></span></span>
 </div>
 
@@ -227,8 +240,8 @@ textarea{resize:vertical;min-height:80px;}
       <div class="user-menu" id="user-menu-btn">
         <div class="user-avatar" id="user-avatar">?</div>
         <div>
-          <div class="user-name" id="user-name">—</div>
-          <div class="user-role" id="user-role">—</div>
+          <div class="user-name" id="user-name">-</div>
+          <div class="user-role" id="user-role">-</div>
         </div>
       </div>
       <button class="logout-btn" onclick="logout()">Déco.</button>
@@ -248,7 +261,7 @@ textarea{resize:vertical;min-height:80px;}
 <div class="app-layout">
   <!-- SIDEBAR -->
   <aside class="sidebar">
-    <div class="dept-banner" id="dept-banner">—</div>
+    <div class="dept-banner" id="dept-banner">-</div>
 
     <div class="sidebar-label">Navigation</div>
     <button class="sidebar-btn active" onclick="showSection('home-section',this)"><span class="s-icon">🏠</span>Tableau de bord</button>
@@ -272,14 +285,14 @@ textarea{resize:vertical;min-height:80px;}
     <div class="section active" id="home-section">
       <div class="section-header">
         <div>
-          <div class="section-title" id="home-greeting">Bonjour —</div>
+          <div class="section-title" id="home-greeting">Bonjour -</div>
           <div class="section-sub" id="home-sub">Chargement...</div>
         </div>
       </div>
       <div class="stats-row" id="home-stats">
-        <div class="stat-card"><div class="stat-icon">📁</div><div><div class="stat-num" id="s-cases">—</div><div class="stat-label">Dossiers actifs</div></div></div>
-        <div class="stat-card"><div class="stat-icon">💬</div><div><div class="stat-num" id="s-msgs">—</div><div class="stat-label">Messages non lus</div></div></div>
-        <div class="stat-card"><div class="stat-icon">📄</div><div><div class="stat-num" id="s-docs">—</div><div class="stat-label">Documents</div></div></div>
+        <div class="stat-card"><div class="stat-icon">📁</div><div><div class="stat-num" id="s-cases">-</div><div class="stat-label">Dossiers actifs</div></div></div>
+        <div class="stat-card"><div class="stat-icon">💬</div><div><div class="stat-num" id="s-msgs">-</div><div class="stat-label">Messages non lus</div></div></div>
+        <div class="stat-card"><div class="stat-icon">📄</div><div><div class="stat-num" id="s-docs">-</div><div class="stat-label">Documents</div></div></div>
       </div>
 
       <div class="card">
@@ -349,7 +362,7 @@ textarea{resize:vertical;min-height:80px;}
         <div class="alert success" id="nc-success"></div>
         <form id="new-case-form">
           <div class="form-grid">
-            <div class="field full"><label>Titre du dossier *</label><input type="text" id="nc-title" required placeholder="ex: State v. Martinez — Braquage armé"/></div>
+            <div class="field full"><label>Titre du dossier *</label><input type="text" id="nc-title" required placeholder="ex: State v. Martinez - Braquage armé"/></div>
             <div class="field"><label>Catégorie</label>
               <select id="nc-category">
                 <option value="autre">Autre</option>
@@ -373,7 +386,7 @@ textarea{resize:vertical;min-height:80px;}
             <div class="field"><label>Nom du défendeur</label><input type="text" id="nc-defendant" placeholder="Prénom NOM"/></div>
             <div class="field"><label>Date d'audience (optionnel)</label><input type="text" id="nc-trialdate" placeholder="JJ/MM/AAAA HH:MM"/></div>
             <div class="field full"><label>Description / Faits</label><textarea id="nc-description" placeholder="Résumé des faits, circonstances de l'arrestation..."></textarea></div>
-            <div class="field full"><label>Charges retenues (une par ligne)</label><textarea id="nc-charges" placeholder="Art. 5.21 — Trafic de stupéfiants&#10;Art. 4.30 — Port illégal d'arme"></textarea></div>
+            <div class="field full"><label>Charges retenues (une par ligne)</label><textarea id="nc-charges" placeholder="Art. 5.21 - Trafic de stupéfiants&#10;Art. 4.30 - Port illégal d'arme"></textarea></div>
           </div>
           <div style="margin-top:18px;display:flex;gap:10px;">
             <button type="submit" class="btn btn-primary">📁 Ouvrir le dossier</button>
@@ -399,9 +412,10 @@ textarea{resize:vertical;min-height:80px;}
           <div class="msg-header">
             <div>
               <div class="msg-header-name" id="current-channel-name">Sélectionnez un canal</div>
-              <div class="msg-header-desc" id="current-channel-desc">—</div>
+              <div class="msg-header-desc" id="current-channel-desc">-</div>
             </div>
           </div>
+          <div id="chambre-bar" class="chambre-bar" style="display:none"></div>
           <div class="msg-list" id="msg-list">
             <div class="msg-system">Sélectionnez un canal pour voir les messages.</div>
           </div>
@@ -446,16 +460,16 @@ textarea{resize:vertical;min-height:80px;}
         <div style="display:flex;align-items:center;gap:20px;margin-bottom:22px;padding-bottom:20px;border-bottom:1px solid var(--gray-2);">
           <div class="user-avatar" id="profile-avatar" style="width:64px;height:64px;font-size:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:white;font-weight:700;">?</div>
           <div>
-            <div style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--navy)" id="profile-name">—</div>
-            <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);margin-top:2px" id="profile-role">—</div>
-            <div style="font-size:12px;color:var(--gray-3);margin-top:2px" id="profile-email">—</div>
+            <div style="font-family:var(--font-serif);font-size:22px;font-weight:700;color:var(--navy)" id="profile-name">-</div>
+            <div style="font-family:var(--font-mono);font-size:12px;color:var(--gold);margin-top:2px" id="profile-role">-</div>
+            <div style="font-size:12px;color:var(--gray-3);margin-top:2px" id="profile-email">-</div>
           </div>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
-          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Département</div><div style="font-weight:600" id="profile-dept">—</div></div>
-          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Badge</div><div style="font-family:var(--font-mono)" id="profile-badge">—</div></div>
-          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Membre depuis</div><div id="profile-created">—</div></div>
-          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Dernière connexion</div><div id="profile-last">—</div></div>
+          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Département</div><div style="font-weight:600" id="profile-dept">-</div></div>
+          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Badge</div><div style="font-family:var(--font-mono)" id="profile-badge">-</div></div>
+          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Membre depuis</div><div id="profile-created">-</div></div>
+          <div><div style="font-size:11px;color:var(--gray-3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px">Dernière connexion</div><div id="profile-last">-</div></div>
         </div>
       </div>
     </div>
@@ -474,16 +488,18 @@ const ROLE_LABELS = {
   ada:'Assistant District Attorney', coordinateur_doj:'Coordinateur DOJ',
   assistant_juridique:'Assistant Juridique', stagiaire_doj:'Stagiaire DOJ',
   president_cour:'Président de la Cour', juge_en_chef:'Juge en Chef',
-  juge:'Juge', avocat_commis:'Avocat Commis d\'Office', sasp:'Agent SASP'
+  juge:'Juge', avocat_commis:'Avocat Commis d\'Office', avocat:'Avocat de la Défense', sasp:'Agent SASP'
 };
 
-const DEPT_LABELS = {doj:'Department of Justice', cour:'Tribunal de San Andreas', sasp:'San Andreas State Police', admin:'Administration'};
+const DEPT_LABELS = {doj:'Department of Justice', cour:'Tribunal de San Andreas', sasp:'San Andreas State Police', admin:'Administration', independant:'Barreau Indépendant'};
 
 // Permissions
 const CAN_CREATE_CASE = ['super_admin','ag','procureur_doj','ada'];
 const CAN_VIEW_ALL_CASES = ['super_admin','ag','president_cour','juge_en_chef'];
 const DOJ_RESOURCES = ['super_admin','ag','procureur_doj','ada','coordinateur_doj','assistant_juridique','stagiaire_doj'];
 const COUR_RESOURCES = ['super_admin','president_cour','juge_en_chef','juge','avocat_commis'];
+const INDEPENDANT_RESOURCES = ['avocat'];
+const CHAMBRE_ROLES = ['super_admin','ag','procureur_doj','ada','avocat_commis','avocat','juge','juge_en_chef','president_cour'];
 
 let profile = null;
 let allCases = [];
@@ -532,7 +548,7 @@ function initUI() {
   const hour = new Date().getHours();
   const greet = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bonjour' : 'Bonsoir';
   document.getElementById('home-greeting').textContent = `${greet}, ${profile.full_name.split(' ')[0]}`;
-  document.getElementById('home-sub').textContent = `${ROLE_LABELS[profile.role]} — ${DEPT_LABELS[profile.department]}`;
+  document.getElementById('home-sub').textContent = `${ROLE_LABELS[profile.role]} - ${DEPT_LABELS[profile.department]}`;
 
   // Dept banner
   const banner = document.getElementById('dept-banner');
@@ -588,7 +604,11 @@ function buildDeptSidebar() {
     sasp: [
       {icon:'📊', label:'Décisions publiques', section:'cases-section'},
     ],
-    admin: []
+    admin: [],
+    independant: [
+      {icon:'⚖️', label:'Chambre Judiciaire', section:'messages-section'},
+      {icon:'📜', label:'Code Pénal', section:'resources-section'},
+    ]
   };
 
   label.textContent = DEPT_LABELS[profile.department];
@@ -645,13 +665,13 @@ function buildResources() {
   // ── Code Pénal : accessible à TOUS les rôles ──
   html += `
     <div class="card">
-      <div class="card-header"><div class="card-title">📜 Code Pénal — État de San Andreas</div></div>
+      <div class="card-header"><div class="card-title">📜 Code Pénal - État de San Andreas</div></div>
       <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
         <div onclick="window.location.href='code-penal.html'" style="padding:16px;background:var(--navy);border-radius:var(--radius);cursor:pointer;transition:all .2s;grid-column:1/-1;display:flex;align-items:center;gap:16px;" onmouseover="this.style.opacity='.9'" onmouseout="this.style.opacity='1'">
           <div style="font-size:32px;">⚖️</div>
           <div>
             <div style="font-weight:700;font-size:15px;color:white;margin-bottom:3px;">Consulter le Code Pénal complet</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.5);">9 Livres · 98 Articles · Recherche intégrée — Édition révisée 2024</div>
+            <div style="font-size:12px;color:rgba(255,255,255,0.5);">9 Livres · 98 Articles · Recherche intégrée - Édition révisée 2024</div>
           </div>
           <div style="margin-left:auto;font-size:13px;font-weight:600;color:var(--gold);">Accéder →</div>
         </div>
@@ -697,6 +717,29 @@ function buildResources() {
         <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
           ${courItems.map(item => `
             <div onclick="${item.href ? `window.location.href='${item.href}'` : ''}" style="padding:14px;background:var(--gray-1);border-radius:var(--radius);cursor:${item.href ? 'pointer' : 'default'};transition:background .15s;" onmouseover="this.style.background='var(--blue-lt)'" onmouseout="this.style.background='var(--gray-1)'">
+              <div style="font-size:22px;margin-bottom:7px;">${item.icon}</div>
+              <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:3px;">${item.title}</div>
+              <div style="font-size:12px;color:var(--gray-4);line-height:1.5;">${item.desc}</div>
+              ${!item.href ? '<div style="margin-top:6px;font-size:10px;color:var(--gray-3);font-family:var(--font-mono)">BIENTÔT DISPONIBLE</div>' : ''}
+            </div>
+          `).join('')}
+        </div>
+      </div>`;
+  }
+
+  // ── Ressources Avocat (Indépendant) ──
+  if (INDEPENDANT_RESOURCES.includes(profile.role)) {
+    const avocatItems = [
+      { icon:'📖', title:'Glossaire juridique complet', desc:'Définitions officielles de tous les termes judiciaires', href:'glossaire.html' },
+      { icon:'✅', title:'Checklist pré-audience', desc:'Liste de vérification complète avant une audience', href:'checklist.html?dept=cour' },
+      { icon:'🚫', title:'Catalogue des motifs d\'objection', desc:'Tous les motifs d\'irrecevabilité et de protestation formelle', href:'objections.html' },
+    ];
+    html += `
+      <div class="card">
+        <div class="card-header"><div class="card-title">⚖️ Ressources Avocat de la Défense</div></div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;">
+          ${avocatItems.map(item => `
+            <div onclick="${item.href ? `window.location.href='${item.href}'` : ''}" style="padding:14px;background:var(--gray-1);border-radius:var(--radius);cursor:${item.href ? 'pointer' : 'default'};transition:background .15s;" onmouseover="this.style.background='#f3e8ff'" onmouseout="this.style.background='var(--gray-1)'">
               <div style="font-size:22px;margin-bottom:7px;">${item.icon}</div>
               <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:3px;">${item.title}</div>
               <div style="font-size:12px;color:var(--gray-4);line-height:1.5;">${item.desc}</div>
@@ -855,6 +898,125 @@ document.getElementById('new-case-form').addEventListener('submit', async (e) =>
 // CHANNELS & MESSAGING
 let dmRealtimeSub = null;
 
+
+let currentChambreMode = false;
+let chambreRealtimeSub = null;
+
+async function selectChambre() {
+  currentChannelId = null;
+  currentDMUserId = null;
+  currentChambreMode = true;
+
+  document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
+  const item = document.getElementById('ch-chambre');
+  if (item) item.classList.add('active');
+
+  document.getElementById('current-channel-name').textContent = '🏛️ Chambre Judiciaire';
+  document.getElementById('current-channel-desc').textContent = 'Discussion RP confidentielle - Parties & Magistrats';
+  document.getElementById('msg-input').disabled = false;
+  document.getElementById('msg-send').disabled = false;
+  document.getElementById('msg-input').placeholder = 'Message à la Chambre...';
+
+  // Afficher la barre de documents
+  renderChambreBar();
+
+  await loadChambreMessages();
+
+  // Realtime
+  if (chambreRealtimeSub) sb.removeChannel(chambreRealtimeSub);
+  chambreRealtimeSub = sb.channel('chambre-judiciaire')
+    .on('postgres_changes', { event: 'INSERT', schema: 'public', table: 'chambre_messages' }, async payload => {
+      const { data: sender } = await sb.from('profiles').select('full_name,role,avatar_color').eq('id', payload.new.sender_id).single();
+      appendChambreMessage({ ...payload.new, sender });
+    })
+    .subscribe();
+}
+
+function renderChambreBar() {
+  const bar = document.getElementById('chambre-bar');
+  if (!bar) return;
+  const docs = [
+    { icon:'📋', label:'Requête en exclusion', type:'requete_exclusion' },
+    { icon:'📝', label:'Conclusions de fond', type:'conclusions' },
+    { icon:'⚖️', label:'Ordonnance de renvoi', type:'ordonnance_renvoi' },
+    { icon:'🔏', label:'Mandat judiciaire', type:'mandat' },
+    { icon:'🤝', label:'Accord de plaidoyer', type:'plea_deal', href:'plea-deal.html' },
+  ];
+  bar.innerHTML = `
+    <span class="chambre-bar-title">📄 Dépôt de document</span>
+    ${docs.map(d => `
+      <button class="chambre-doc-btn" onclick="openDocWIP('${d.type}'${d.href ? `,'${d.href}'` : ''})">
+        ${d.icon} ${d.label} <span class="wip-tag">WIP</span>
+      </button>
+    `).join('')}
+  `;
+  bar.style.display = 'flex';
+}
+
+function openDocWIP(type, href) {
+  if (type === 'plea_deal' && href) {
+    window.location.href = href;
+    return;
+  }
+  const labels = {
+    requete_exclusion: 'Requête en exclusion de preuves',
+    conclusions: 'Conclusions de fond',
+    ordonnance_renvoi: 'Ordonnance de renvoi',
+    mandat: 'Mandat judiciaire',
+  };
+  alert(`⚙️ Générateur de document\n\n"${labels[type] || type}" est en cours de développement.\n\nCette fonctionnalité permettra de générer un document officiel directement depuis la Chambre et de le soumettre aux parties.\n\n- Disponible prochainement -`);
+}
+
+async function loadChambreMessages() {
+  const { data, error } = await sb.from('chambre_messages')
+    .select('*, sender:profiles!chambre_messages_sender_id_fkey(full_name,role,avatar_color)')
+    .eq('is_deleted', false)
+    .order('created_at', { ascending: true })
+    .limit(100);
+
+  const list = document.getElementById('msg-list');
+  if (!data || !data.length) {
+    list.innerHTML = `
+      <div class="chambre-msg-system">Bienvenue dans la Chambre Judiciaire.</div>
+      <div class="chambre-msg-system">Cette session est réservée aux échanges officiels entre les parties et les magistrats.<br>Tous les messages sont enregistrés et font foi dans le cadre de la procédure RP.</div>
+    `;
+    return;
+  }
+  list.innerHTML = '';
+  data.forEach(m => appendChambreMessage(m));
+  list.scrollTop = list.scrollHeight;
+}
+
+function appendChambreMessage(m) {
+  const list = document.getElementById('msg-list');
+  if (!currentChambreMode) return;
+  const sender = m.sender || {};
+  const isMe = m.sender_id === profile.id;
+  const role = sender.role || '';
+  const rolePillClass = ['juge','juge_en_chef','president_cour'].includes(role) ? 'chambre-role-juge' : 'chambre-role-acc';
+  const roleLabel = ROLE_LABELS[role] || role;
+  const time = new Date(m.created_at).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+  const el = document.createElement('div');
+  el.className = 'msg-item';
+  el.style.cssText = isMe ? 'align-self:flex-end;max-width:75%' : 'max-width:75%';
+  el.innerHTML = `
+    <div class="msg-meta" style="${isMe ? 'justify-content:flex-end' : ''}">
+      <span style="width:26px;height:26px;border-radius:50%;background:${sender.avatar_color||'#2251a3'};display:inline-flex;align-items:center;justify-content:center;color:white;font-size:11px;font-weight:700">${(sender.full_name||'?').charAt(0)}</span>
+      <span class="msg-name">${sender.full_name || 'Inconnu'}</span>
+      <span class="chambre-role-pill ${rolePillClass}">${roleLabel}</span>
+      <span class="msg-time">${time}</span>
+    </div>
+    <div class="msg-bubble" style="${isMe ? 'background:var(--navy);color:white;border-bottom-right-radius:3px' : 'border-bottom-left-radius:3px'}">${escapeHtml(m.content)}</div>
+  `;
+  list.appendChild(el);
+  list.scrollTop = list.scrollHeight;
+}
+
+async function sendChambreMessage(content) {
+  const { error } = await sb.from('chambre_messages').insert({ sender_id: profile.id, content });
+  if (error) { console.error(error); return; }
+}
+
 async function loadChannels() {
   const { data } = await sb.from('channels').select('*').order('name');
   const list = document.getElementById('channel-list');
@@ -876,6 +1038,16 @@ async function loadChannels() {
 
   // Charger les DMs
   html += await buildDMList();
+
+  // Chambre Judiciaire (visible seulement pour les rôles éligibles)
+  if (CHAMBRE_ROLES.includes(profile.role)) {
+    html += '<div class="channel-group-label">⚖️ Chambre Judiciaire</div>';
+    html += `<div class="channel-item" id="ch-chambre" onclick="selectChambre()">
+      <span class="ch-icon" style="font-size:14px;">🏛️</span>
+      <span>Chambre Judiciaire</span>
+      <span id="chambre-unread-badge" style="display:none;background:var(--gold);color:var(--navy);font-size:10px;font-weight:700;min-width:17px;height:17px;border-radius:9px;display:none;align-items:center;justify-content:center;font-family:var(--font-mono);margin-left:auto;"></span>
+    </div>`;
+  }
   list.innerHTML = html || '<div style="padding:14px;font-size:13px;color:var(--gray-3)">Aucun canal disponible</div>';
 }
 
@@ -920,6 +1092,9 @@ let currentDMUserId = null;
 async function selectDM(userId, userName, avatarColor) {
   currentChannelId = null;
   currentDMUserId = userId;
+  currentChambreMode = false;
+  const bar = document.getElementById('chambre-bar');
+  if (bar) bar.style.display = 'none';
 
   document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
   document.getElementById(`dm-${userId}`)?.classList.add('active');
@@ -981,6 +1156,9 @@ async function selectDM(userId, userName, avatarColor) {
 async function selectChannel(id, name, desc) {
   currentChannelId = id;
   currentDMUserId = null;
+  currentChambreMode = false;
+  const bar = document.getElementById('chambre-bar');
+  if (bar) bar.style.display = 'none';
   if (dmRealtimeSub) { sb.removeChannel(dmRealtimeSub); dmRealtimeSub = null; }
   document.querySelectorAll('.channel-item').forEach(el => el.classList.remove('active'));
   const el = document.getElementById(`ch-${id}`);
@@ -1022,7 +1200,7 @@ async function loadMessages(channelId) {
 
 function renderMessage(m) {
   if (m.is_system) return `<div class="msg-system">${m.content}</div>`;
-  const sender = m.sender || { full_name: 'Inconnu', role: '—', avatar_color: '#aaa' };
+  const sender = m.sender || { full_name: 'Inconnu', role: '-', avatar_color: '#aaa' };
   const initials = sender.full_name.charAt(0);
   const time = new Date(m.created_at).toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
   return `
@@ -1059,6 +1237,7 @@ async function sendMessage() {
   const content = input.value.trim();
   if (!content) return;
   input.value = '';
+  if (currentChambreMode) { await sendChambreMessage(content); return; }
 
   if (currentDMUserId) {
     // Envoi DM

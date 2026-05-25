@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DOJ Portal — Générateur de Plea Deal</title>
+<title>DOJ Portal - Générateur de Plea Deal</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
@@ -148,7 +148,7 @@ textarea{resize:vertical;min-height:70px;}
 <body>
 
 <div class="topbar">
-  <span>DOJ PORTAL — SAN ANDREAS // PORTAIL SÉCURISÉ</span>
+  <span>DOJ PORTAL - SAN ANDREAS // PORTAIL SÉCURISÉ</span>
   <span id="clock"></span>
 </div>
 <nav class="topnav">
@@ -158,7 +158,7 @@ textarea{resize:vertical;min-height:70px;}
       <div>DOJ <span>Portal</span></div>
     </a>
     <a class="back-btn" href="dashboard.html">← Tableau de bord</a>
-    <span class="nav-title">Générateur — Accord de Plaidoyer</span>
+    <span class="nav-title">Générateur - Accord de Plaidoyer</span>
   </div>
 </nav>
 
@@ -177,7 +177,7 @@ textarea{resize:vertical;min-height:70px;}
         <div class="field full">
           <label>Dossier judiciaire (optionnel)</label>
           <select id="f-case" onchange="onCaseChange()">
-            <option value="">— Sélectionner un dossier existant —</option>
+            <option value="">- Sélectionner un dossier existant -</option>
           </select>
         </div>
         <div class="field">
@@ -213,7 +213,7 @@ textarea{resize:vertical;min-height:70px;}
 
     <!-- Section 4 : Réduction -->
     <div class="card">
-      <div class="card-title"><div class="num">4</div>Négociation — Réduction de peine</div>
+      <div class="card-title"><div class="num">4</div>Négociation - Réduction de peine</div>
       <div style="display:flex;align-items:center;gap:16px;margin-bottom:10px;">
         <div>
           <div class="reduction-val" id="reduction-display">30%</div>
@@ -296,7 +296,7 @@ let casesList = [];
   casesList.forEach(c => {
     const opt = document.createElement('option');
     opt.value = c.id;
-    opt.textContent = `${c.case_number} — ${c.title}`;
+    opt.textContent = `${c.case_number} - ${c.title}`;
     sel.appendChild(opt);
   });
 
@@ -425,12 +425,12 @@ function calcSentence(charge, reduction) {
 }
 
 function formatPrison(val, unit) {
-  if (val === null) return '—';
+  if (val === null) return '-';
   if (unit === 'variable') return 'Variable';
   return `${val} ${unit}`;
 }
 function formatFine(val, unit) {
-  if (val === null) return '—';
+  if (val === null) return '-';
   if (unit === 'variable') return 'Variable';
   return `${Number(val).toLocaleString('fr-FR')} $`;
 }
@@ -440,14 +440,14 @@ function updatePreview() {
   const reduction = parseInt(document.getElementById('f-reduction').value);
   document.getElementById('reduction-fill').style.width = `${(reduction/60)*100}%`;
 
-  const ref = document.getElementById('f-ref').value || 'DOJ-PA-—';
-  const date = document.getElementById('f-date').value || '—';
+  const ref = document.getElementById('f-ref').value || 'DOJ-PA--';
+  const date = document.getElementById('f-date').value || '-';
   const defendant = document.getElementById('f-defendant').value || '[DÉFENDEUR]';
-  const dob = document.getElementById('f-dob').value || '—';
+  const dob = document.getElementById('f-dob').value || '-';
   const ada = document.getElementById('f-ada').value || '[ADA]';
   const adaRole = document.getElementById('f-ada-role').value || 'Assistant District Attorney';
-  const counsel = document.getElementById('f-counsel').value || '—';
-  const judge = document.getElementById('f-judge').value || '—';
+  const counsel = document.getElementById('f-counsel').value || '-';
+  const judge = document.getElementById('f-judge').value || '-';
   const extraCond = document.getElementById('f-extra-conditions').value.trim();
 
   // Calcul de la sentence totale
@@ -481,7 +481,7 @@ function updatePreview() {
     chargesHTML += `
       <div class="doc-charge">
         <div class="doc-charge-header">
-          <span class="doc-charge-num">Chef n°${ch.idx} — ${ch.article || 'Art. —'}</span>
+          <span class="doc-charge-num">Chef n°${ch.idx} - ${ch.article || 'Art. -'}</span>
           <span class="doc-charge-class ${categoryClass[ch.category]||'class-C'}">${categoryLabel[ch.category]||ch.category}</span>
         </div>
         <div class="doc-charge-title">${ch.title || '[Intitulé de l\'infraction]'}</div>
@@ -492,16 +492,16 @@ function updatePreview() {
     const isFirst = i === 0;
     const absorbNote = !isFirst ? ' <span style="color:var(--gray-3);font-size:10px">(absorbée)</span>' : '';
     sentenceRows += `<tr ${!isFirst ? 'style="opacity:.7"' : ''}>
-      <td>${ch.article} — ${ch.title||'—'}${absorbNote}</td>
-      <td>${s.prisonBase !== null ? formatPrison(s.prisonBase, ch.prison_unit) : '—'}</td>
-      <td style="color:var(--red)">- ${s.prisonRed !== null ? formatPrison(s.prisonRed, ch.prison_unit) : '—'}</td>
-      <td style="font-weight:700">${s.prisonFinal !== null ? formatPrison(s.prisonFinal, ch.prison_unit) : (ch.prison_unit==='variable'?'Variable':'—')}</td>
+      <td>${ch.article} - ${ch.title||'-'}${absorbNote}</td>
+      <td>${s.prisonBase !== null ? formatPrison(s.prisonBase, ch.prison_unit) : '-'}</td>
+      <td style="color:var(--red)">- ${s.prisonRed !== null ? formatPrison(s.prisonRed, ch.prison_unit) : '-'}</td>
+      <td style="font-weight:700">${s.prisonFinal !== null ? formatPrison(s.prisonFinal, ch.prison_unit) : (ch.prison_unit==='variable'?'Variable':'-')}</td>
     </tr>
     <tr ${!isFirst ? 'style="opacity:.7"' : ''}>
       <td style="padding-top:2px;color:var(--gray-4);font-size:11px">  Amende</td>
-      <td>${s.fineBase !== null ? formatFine(s.fineBase, ch.fine_unit) : '—'}</td>
-      <td style="color:var(--red)">- ${s.fineRed !== null ? formatFine(s.fineRed, ch.fine_unit) : '—'}</td>
-      <td style="font-weight:700">${s.fineFinal !== null ? formatFine(s.fineFinal, ch.fine_unit) : (ch.fine_unit==='variable'?'Variable':'—')}</td>
+      <td>${s.fineBase !== null ? formatFine(s.fineBase, ch.fine_unit) : '-'}</td>
+      <td style="color:var(--red)">- ${s.fineRed !== null ? formatFine(s.fineRed, ch.fine_unit) : '-'}</td>
+      <td style="font-weight:700">${s.fineFinal !== null ? formatFine(s.fineFinal, ch.fine_unit) : (ch.fine_unit==='variable'?'Variable':'-')}</td>
     </tr>`;
 
     // Peine dominante = première charge
@@ -513,7 +513,7 @@ function updatePreview() {
     if (s.fineFinal !== null) totalFine += s.fineFinal;
   });
 
-  const totalFineStr = totalFine > 0 ? `${totalFine.toLocaleString('fr-FR')} $` : '—';
+  const totalFineStr = totalFine > 0 ? `${totalFine.toLocaleString('fr-FR')} $` : '-';
 
   // Conditions standard
   let conditionsHTML = `
@@ -534,7 +534,7 @@ function updatePreview() {
       <div class="doc-header-left">
         <div class="doc-header-title">ACCORD DE <span>PLAIDOYER</span></div>
         <div class="doc-header-sub">DISTRICT ATTORNEY'S OFFICE · SAN ANDREAS</div>
-        <div class="doc-header-sub" style="margin-top:4px;color:rgba(255,255,255,0.3)">Plea Agreement — Confidentiel, usage judiciaire</div>
+        <div class="doc-header-sub" style="margin-top:4px;color:rgba(255,255,255,0.3)">Plea Agreement - Confidentiel, usage judiciaire</div>
       </div>
       <div class="doc-header-right">
         <div class="doc-ref">${ref}</div>
@@ -588,10 +588,10 @@ function updatePreview() {
         <table class="doc-sentence-table">
           <thead><tr><th>Chef d'accusation</th><th>Base</th><th>Réduction (-${reduction}%)</th><th>Peine finale</th></tr></thead>
           <tbody>
-            ${sentenceRows || '<tr><td colspan="4" style="color:var(--gray-3);text-align:center">—</td></tr>'}
+            ${sentenceRows || '<tr><td colspan="4" style="color:var(--gray-3);text-align:center">-</td></tr>'}
             <tr class="total-row">
               <td colspan="3"><strong>TOTAL CONSOLIDÉ</strong></td>
-              <td>${dominantPrisonStr || '—'}<br/>${totalFineStr}</td>
+              <td>${dominantPrisonStr || '-'}<br/>${totalFineStr}</td>
             </tr>
           </tbody>
         </table>
@@ -607,14 +607,14 @@ function updatePreview() {
         <div class="doc-sigs">
           <div class="doc-sig"><div class="doc-sig-line"></div><div class="doc-sig-name">${ada}</div><div class="doc-sig-role">${adaRole}</div></div>
           <div class="doc-sig"><div class="doc-sig-line"></div><div class="doc-sig-name">${defendant}</div><div class="doc-sig-role">Défendeur</div></div>
-          <div class="doc-sig"><div class="doc-sig-line"></div><div class="doc-sig-name">${counsel !== '—' ? counsel : '—'}</div><div class="doc-sig-role">Conseil du Défendeur</div></div>
+          <div class="doc-sig"><div class="doc-sig-line"></div><div class="doc-sig-name">${counsel !== '-' ? counsel : '-'}</div><div class="doc-sig-role">Conseil du Défendeur</div></div>
         </div>
         <div class="doc-validation">
           <div class="doc-validation-title">Validation par le Tribunal</div>
           <div style="font-size:12px;color:#555;line-height:1.6">
             Le soussigné, Juge présidant l'audience, déclare avoir examiné le présent accord,
             vérifié le caractère volontaire et éclairé du plaidoyer, et valide les termes de la sentence.<br/>
-            <strong>${judge !== '—' ? judge : '___________________________'}</strong> — Date : _____ / _____ / ${new Date().getFullYear()}
+            <strong>${judge !== '-' ? judge : '___________________________'}</strong> - Date : _____ / _____ / ${new Date().getFullYear()}
           </div>
         </div>
       </div>
@@ -694,7 +694,7 @@ async function saveDocument() {
   const { error } = await sb.from('documents').insert({
     case_id: caseId,
     type: 'plea_deal',
-    title: `Accord de Plaidoyer — ${defendant} (${ref})`,
+    title: `Accord de Plaidoyer - ${defendant} (${ref})`,
     content,
     html_content: document.getElementById('doc-content').innerHTML,
     created_by: profile.id,

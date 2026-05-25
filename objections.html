@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Catalogue des Objections — DOJ San Andreas</title>
+<title>Catalogue des Objections - DOJ San Andreas</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
@@ -79,7 +79,7 @@ mark{background:#fff3a3;border-radius:2px;padding:0 1px;}
 <body>
 
 <div class="topbar">
-  <span>DOJ PORTAL — SAN ANDREAS // PORTAIL SÉCURISÉ</span>
+  <span>DOJ PORTAL - SAN ANDREAS // PORTAIL SÉCURISÉ</span>
   <span id="clock"></span>
 </div>
 <nav class="topnav">
@@ -101,7 +101,7 @@ mark{background:#fff3a3;border-radius:2px;padding:0 1px;}
       <div class="doc-banner-sub">Tous les motifs d'irrecevabilité et de protestation formelle utilisables devant le tribunal. Chaque objection est accompagnée de sa formule orale, de sa définition et d'un exemple d'application.</div>
     </div>
     <div class="doc-banner-stat">
-      <div class="stat-big" id="total-count">—</div>
+      <div class="stat-big" id="total-count">-</div>
       <div class="stat-label">OBJECTIONS</div>
     </div>
   </div>
@@ -129,7 +129,7 @@ const OBJECTIONS = [
   // ── RECEVABILITÉ ──
   {
     cat:'recevabilite', catLabel:'Recevabilité de la preuve',
-    name:'Ouï-dire', trigger:'Objection — ouï-dire',
+    name:'Ouï-dire', trigger:'Objection - ouï-dire',
     def:'Le témoin rapporte une déclaration faite hors audience par une personne absente, présentée comme preuve de la vérité de son contenu. Irrecevable sauf exceptions légales.',
     example:'« L\'officier témoigne de ce que la voisine lui aurait déclaré le soir des faits. »',
     sustained:'Accordée si la déclaration est rapportée comme preuve de sa vérité par un tiers absent.',
@@ -137,15 +137,15 @@ const OBJECTIONS = [
   },
   {
     cat:'recevabilite', catLabel:'Recevabilité de la preuve',
-    name:'Preuve obtenue illégalement', trigger:'Objection — preuve illicitement obtenue',
+    name:'Preuve obtenue illégalement', trigger:'Objection - preuve illicitement obtenue',
     def:'La preuve a été recueillie en violation des droits constitutionnels du prévenu : perquisition sans mandat, aveu arraché sous la contrainte, interception irrégulière.',
     example:'« L\'arme a été saisie lors d\'une perquisition effectuée sans mandat valide. »',
-    sustained:'Accordée si l\'irrégularité est établie — la preuve est exclue du dossier.',
+    sustained:'Accordée si l\'irrégularité est établie - la preuve est exclue du dossier.',
     overruled:'Rejetée si la perquisition était légale ou si l\'exception de bonne foi s\'applique.'
   },
   {
     cat:'recevabilite', catLabel:'Recevabilité de la preuve',
-    name:'Absence de base suffisante', trigger:'Objection — absence de fondement',
+    name:'Absence de base suffisante', trigger:'Objection - absence de fondement',
     def:'La partie qui produit une preuve n\'a pas préalablement établi les conditions nécessaires à son authenticité ou à sa pertinence (chaîne de possession, identité, contexte).',
     example:'« Le document est produit sans que son auteur ou son origine n\'aient été établis. »',
     sustained:'Accordée si les éléments d\'authentification préalable font défaut.',
@@ -153,7 +153,7 @@ const OBJECTIONS = [
   },
   {
     cat:'recevabilite', catLabel:'Recevabilité de la preuve',
-    name:'Meilleure preuve disponible', trigger:'Objection — document original requis',
+    name:'Meilleure preuve disponible', trigger:'Objection - document original requis',
     def:'Lorsqu\'une partie cherche à prouver le contenu d\'un écrit, d\'un enregistrement ou d\'une photographie, c\'est l\'original qui doit être produit, sauf impossibilité dûment justifiée.',
     example:'« Une photocopie du contrat est produite alors que l\'original n\'est pas introuvable. »',
     sustained:'Accordée si l\'original existe et est disponible.',
@@ -162,7 +162,7 @@ const OBJECTIONS = [
   // ── FORME ──
   {
     cat:'forme', catLabel:'Forme et formulation des questions',
-    name:'Question suggestive', trigger:'Objection — question suggestive',
+    name:'Question suggestive', trigger:'Objection - question suggestive',
     def:'La question contient en elle-même la réponse souhaitée ou suggère fortement une réponse déterminée. Irrecevable lors de l\'interrogatoire des propres témoins (audition principale).',
     example:'« N\'est-ce pas que vous étiez bien à l\'angle de la rue à 22h00 ? »',
     sustained:'Accordée lors de l\'audition principale des propres témoins.',
@@ -170,15 +170,15 @@ const OBJECTIONS = [
   },
   {
     cat:'forme', catLabel:'Forme et formulation des questions',
-    name:'Question composée', trigger:'Objection — question composée',
+    name:'Question composée', trigger:'Objection - question composée',
     def:'La question contient plusieurs interrogations distinctes auxquelles il est impossible de répondre par un seul oui ou non sans ambiguïté. Crée une confusion dans le témoignage.',
     example:'« Étiez-vous au courant et avez-vous participé à la planification et à l\'exécution ? »',
-    sustained:'Accordée — la partie doit reformuler en questions séparées.',
+    sustained:'Accordée - la partie doit reformuler en questions séparées.',
     overruled:'Rejetée si les questions sont suffisamment liées pour être traitées ensemble.'
   },
   {
     cat:'forme', catLabel:'Forme et formulation des questions',
-    name:'Présupposition de faits non établis', trigger:'Objection — présupposition de fait',
+    name:'Présupposition de faits non établis', trigger:'Objection - présupposition de fait',
     def:'La question intègre comme acquis un fait qui n\'a pas encore été prouvé ni admis lors des débats, induisant ainsi le tribunal en erreur.',
     example:'« Depuis combien de temps étiez-vous associé à l\'organisation criminelle ? »',
     sustained:'Accordée si le fait présupposé n\'a pas été établi par ailleurs dans les débats.',
@@ -186,7 +186,7 @@ const OBJECTIONS = [
   },
   {
     cat:'forme', catLabel:'Forme et formulation des questions',
-    name:'Question vague ou imprécise', trigger:'Objection — question imprécise',
+    name:'Question vague ou imprécise', trigger:'Objection - question imprécise',
     def:'La question est tellement vague, ambiguë ou générale qu\'elle ne permet pas au témoin de comprendre ce qui lui est demandé ni d\'y répondre de façon précise et utile.',
     example:'« Parlez-nous un peu de cette nuit-là, en général. »',
     sustained:'Accordée si la question est trop vague pour obtenir une réponse utile.',
@@ -195,7 +195,7 @@ const OBJECTIONS = [
   // ── FOND ──
   {
     cat:'fond', catLabel:'Pertinence et fond',
-    name:'Non-pertinence', trigger:'Objection — non-pertinence',
+    name:'Non-pertinence', trigger:'Objection - non-pertinence',
     def:'La preuve ou la question n\'a aucun lien logique avec les faits en litige dans cette affaire. Toute preuve doit être pertinente pour être recevable.',
     example:'« L\'avocat produit les antécédents professionnels du prévenu, sans lien avec les faits. »',
     sustained:'Accordée si la preuve est sans rapport avec les faits de la cause.',
@@ -203,7 +203,7 @@ const OBJECTIONS = [
   },
   {
     cat:'fond', catLabel:'Pertinence et fond',
-    name:'Préjudice disproportionné', trigger:'Objection — effet préjudiciable excessif',
+    name:'Préjudice disproportionné', trigger:'Objection - effet préjudiciable excessif',
     def:'Bien que pertinente, la preuve est susceptible de créer dans l\'esprit des jurés un préjugé tel que son effet préjudiciable l\'emporte substantiellement sur sa valeur probante.',
     example:'« Des photographies particulièrement choquantes sont présentées alors que les faits sont admis. »',
     sustained:'Accordée si l\'effet émotionnel dépasse clairement la valeur de preuve.',
@@ -211,7 +211,7 @@ const OBJECTIONS = [
   },
   {
     cat:'fond', catLabel:'Pertinence et fond',
-    name:'Caractère spéculatif', trigger:'Objection — spéculation',
+    name:'Caractère spéculatif', trigger:'Objection - spéculation',
     def:'La question invite le témoin à donner son avis, à émettre une hypothèse ou à supposer des faits qui ne sont pas de sa connaissance directe et personnelle.',
     example:'« À votre avis, pourquoi pensez-vous que le prévenu se serait comporté ainsi ? »',
     sustained:'Accordée si le témoin est invité à conjecturer au-delà de ce qu\'il a directement perçu.',
@@ -219,7 +219,7 @@ const OBJECTIONS = [
   },
   {
     cat:'fond', catLabel:'Pertinence et fond',
-    name:'Preuve de caractère irrecevable', trigger:'Objection — preuve de caractère inadmissible',
+    name:'Preuve de caractère irrecevable', trigger:'Objection - preuve de caractère inadmissible',
     def:'L\'accusation tente de prouver la culpabilité de l\'accusé en se fondant sur ses comportements passés ou sa mauvaise réputation générale plutôt que sur les faits reprochés.',
     example:'« Le procureur évoque les condamnations antérieures pour en inférer la culpabilité actuelle. »',
     sustained:'Accordée si les antécédents sont utilisés pour établir la propension à commettre des infractions.',
@@ -228,7 +228,7 @@ const OBJECTIONS = [
   // ── COMPORTEMENT ──
   {
     cat:'comportement', catLabel:'Comportement et conduite',
-    name:'Pression ou harcèlement du témoin', trigger:'Objection — harcèlement du témoin',
+    name:'Pression ou harcèlement du témoin', trigger:'Objection - harcèlement du témoin',
     def:'L\'avocat adopte une attitude intimidante, agressive ou irrespectueuse envers le témoin, dépassant les limites d\'un contre-interrogatoire vigoureux mais loyal.',
     example:'« Le conseil répète la même question sur un ton menaçant malgré la réponse déjà donnée. »',
     sustained:'Accordée si l\'attitude dépasse les limites du contre-interrogatoire admissible.',
@@ -236,15 +236,15 @@ const OBJECTIONS = [
   },
   {
     cat:'comportement', catLabel:'Comportement et conduite',
-    name:'Question de type plaidoirie', trigger:'Objection — plaidoirie déguisée',
+    name:'Question de type plaidoirie', trigger:'Objection - plaidoirie déguisée',
     def:'Sous couvert de poser une question, l\'avocat expose en réalité ses propres conclusions ou développe son argumentaire, empiétant sur le temps réservé aux plaidoiries.',
     example:'« Ne pensez-vous pas que les preuves démontrent clairement que l\'accusé est coupable ? »',
-    sustained:'Accordée — l\'avocat doit réserver son argumentation aux plaidoiries.',
+    sustained:'Accordée - l\'avocat doit réserver son argumentation aux plaidoiries.',
     overruled:'Rejetée si la question demande bien une information factuelle ou un avis d\'expert.'
   },
   {
     cat:'comportement', catLabel:'Comportement et conduite',
-    name:'Question déjà répondue', trigger:'Objection — question déjà répondue',
+    name:'Question déjà répondue', trigger:'Objection - question déjà répondue',
     def:'La partie répète une question à laquelle le témoin a déjà clairement répondu, cherchant à obtenir une réponse différente ou à influencer le témoignage par la répétition.',
     example:'« Le défenseur pose pour la troisième fois la même question sur l\'heure des faits. »',
     sustained:'Accordée si une réponse claire et complète a déjà été donnée.',
@@ -252,16 +252,16 @@ const OBJECTIONS = [
   },
   {
     cat:'comportement', catLabel:'Comportement et conduite',
-    name:'Propos irrespectueux', trigger:'Objection — manque de déférence au tribunal',
+    name:'Propos irrespectueux', trigger:'Objection - manque de déférence au tribunal',
     def:'L\'avocat ou une partie adopte un comportement, des propos ou une attitude contraires à la dignité de l\'audience et au respect dû au tribunal.',
     example:'« Le conseil tient des propos sarcastiques à l\'adresse du juge ou de la partie adverse. »',
-    sustained:'Accordée — le tribunal peut ordonner le rappel à l\'ordre ou des sanctions.',
+    sustained:'Accordée - le tribunal peut ordonner le rappel à l\'ordre ou des sanctions.',
     overruled:'Rejetée si les propos s\'inscrivent dans le cadre d\'une défense vigoureuse mais loyale.'
   },
   // ── TÉMOIGNAGE ──
   {
     cat:'temoignage', catLabel:'Témoignage et experts',
-    name:'Opinion d\'un non-expert', trigger:'Objection — témoignage d\'opinion irrecevable',
+    name:'Opinion d\'un non-expert', trigger:'Objection - témoignage d\'opinion irrecevable',
     def:'Un témoin ordinaire (non expert) exprime une opinion ou porte un jugement qui dépasse la simple description de ce qu\'il a directement perçu par ses sens.',
     example:'« Le témoin affirme que la conduite du prévenu démontrait l\'intention de tuer. »',
     sustained:'Accordée si le témoin n\'est pas qualifié comme expert dans le domaine concerné.',
@@ -269,7 +269,7 @@ const OBJECTIONS = [
   },
   {
     cat:'temoignage', catLabel:'Témoignage et experts',
-    name:'Dépassement de compétence de l\'expert', trigger:'Objection — dépassement d\'expertise',
+    name:'Dépassement de compétence de l\'expert', trigger:'Objection - dépassement d\'expertise',
     def:'L\'expert s\'exprime sur des questions qui sortent du domaine spécifique pour lequel il a été qualifié et accrédité par le tribunal dans la présente affaire.',
     example:'« Le médecin légiste donne un avis sur des questions balistiques sans y avoir été qualifié. »',
     sustained:'Accordée si la question excède le champ d\'expertise pour lequel le témoin est accrédité.',
@@ -277,7 +277,7 @@ const OBJECTIONS = [
   },
   {
     cat:'temoignage', catLabel:'Témoignage et experts',
-    name:'Défaut de connaissance personnelle', trigger:'Objection — absence de connaissance directe',
+    name:'Défaut de connaissance personnelle', trigger:'Objection - absence de connaissance directe',
     def:'Le témoin s\'exprime sur des faits qu\'il n\'a pas personnellement et directement perçus : il rapporte ce que d\'autres lui ont dit ou ce qu\'il a lu, sans en avoir été lui-même le témoin.',
     example:'« L\'agent témoigne de ce que son collègue aurait constaté sur les lieux avant son arrivée. »',
     sustained:'Accordée si le témoin n\'avait pas de perception directe des faits évoqués.',
@@ -285,7 +285,7 @@ const OBJECTIONS = [
   },
   {
     cat:'temoignage', catLabel:'Témoignage et experts',
-    name:'Violation du secret professionnel', trigger:'Objection — secret professionnel',
+    name:'Violation du secret professionnel', trigger:'Objection - secret professionnel',
     def:'La question porte sur des échanges protégés par le secret professionnel (avocat-client, médecin-patient, prêtre-pénitent) ou par le privilège conjugal. Ces communications sont irrecevables.',
     example:'« Le procureur interroge un avocat sur les confidences de son ancien client. »',
     sustained:'Accordée si la communication entre bien dans le champ d\'une protection légale reconnue.',

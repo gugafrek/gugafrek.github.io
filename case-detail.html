@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>DOJ Portal — Dossier</title>
+<title>DOJ Portal - Dossier</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Libre+Franklin:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet"/>
 <style>
@@ -127,7 +127,7 @@ textarea{resize:vertical;min-height:80px;}
 </div>
 
 <div class="topbar">
-  <span>DOJ PORTAL — SAN ANDREAS // PORTAIL SÉCURISÉ</span>
+  <span>DOJ PORTAL - SAN ANDREAS // PORTAIL SÉCURISÉ</span>
   <span id="clock"></span>
 </div>
 <nav class="topnav">
@@ -147,13 +147,13 @@ textarea{resize:vertical;min-height:80px;}
   <!-- HEADER -->
   <div class="page-header">
     <div>
-      <div class="case-num-label" id="h-case-num">—</div>
+      <div class="case-num-label" id="h-case-num">-</div>
       <div class="case-title-h" id="h-title">Chargement...</div>
       <div class="case-meta-row">
-        <span class="status-pill" id="h-status">—</span>
-        <span class="priority-badge" id="h-priority">—</span>
-        <span style="font-size:12px;color:var(--gray-3)">Créé le <span id="h-created">—</span></span>
-        <span style="font-size:12px;color:var(--gray-3)">Modifié le <span id="h-updated">—</span></span>
+        <span class="status-pill" id="h-status">-</span>
+        <span class="priority-badge" id="h-priority">-</span>
+        <span style="font-size:12px;color:var(--gray-3)">Créé le <span id="h-created">-</span></span>
+        <span style="font-size:12px;color:var(--gray-3)">Modifié le <span id="h-updated">-</span></span>
       </div>
     </div>
     <div class="header-actions">
@@ -172,12 +172,12 @@ textarea{resize:vertical;min-height:80px;}
           <div class="card-title">📋 Informations générales</div>
         </div>
         <div class="meta-grid">
-          <div class="meta-item"><label>Défendeur</label><div class="meta-val" id="d-defendant">—</div></div>
-          <div class="meta-item"><label>Catégorie</label><div class="meta-val" id="d-category">—</div></div>
-          <div class="meta-item"><label>Date d'audience</label><div class="meta-val" id="d-trial">—</div></div>
-          <div class="meta-item"><label>Verdict</label><div class="meta-val" id="d-verdict">—</div></div>
+          <div class="meta-item"><label>Défendeur</label><div class="meta-val" id="d-defendant">-</div></div>
+          <div class="meta-item"><label>Catégorie</label><div class="meta-val" id="d-category">-</div></div>
+          <div class="meta-item"><label>Date d'audience</label><div class="meta-val" id="d-trial">-</div></div>
+          <div class="meta-item"><label>Verdict</label><div class="meta-val" id="d-verdict">-</div></div>
         </div>
-        <div style="margin-top:14px"><label>Description / Faits</label><div style="font-size:13.5px;line-height:1.7;color:var(--gray-dk);white-space:pre-wrap" id="d-description">—</div></div>
+        <div style="margin-top:14px"><label>Description / Faits</label><div style="font-size:13.5px;line-height:1.7;color:var(--gray-dk);white-space:pre-wrap" id="d-description">-</div></div>
       </div>
 
       <!-- CHARGES -->
@@ -242,8 +242,8 @@ textarea{resize:vertical;min-height:80px;}
         </div>
         <div id="status-display">
           <div class="assignee-display">
-            <span class="status-pill" id="side-status">—</span>
-            <span style="font-size:12px;color:var(--gray-3)" id="side-status-date">—</span>
+            <span class="status-pill" id="side-status">-</span>
+            <span style="font-size:12px;color:var(--gray-3)" id="side-status-date">-</span>
           </div>
         </div>
       </div>
@@ -259,7 +259,7 @@ textarea{resize:vertical;min-height:80px;}
         </div>
         <div id="ada-form" style="display:none;margin-top:10px">
           <label>Sélectionner un ADA</label>
-          <select id="ada-select"><option value="">— Non assigné —</option></select>
+          <select id="ada-select"><option value="">- Non assigné -</option></select>
           <div style="display:flex;gap:8px;margin-top:10px">
             <button class="btn btn-primary btn-sm" onclick="assignPerson('ada')">Confirmer</button>
             <button class="btn btn-outline btn-sm" onclick="toggleAssignForm('ada')">Annuler</button>
@@ -278,7 +278,7 @@ textarea{resize:vertical;min-height:80px;}
         </div>
         <div id="judge-form" style="display:none;margin-top:10px">
           <label>Sélectionner un juge</label>
-          <select id="judge-select"><option value="">— Non assigné —</option></select>
+          <select id="judge-select"><option value="">- Non assigné -</option></select>
           <div style="display:flex;gap:8px;margin-top:10px">
             <button class="btn btn-primary btn-sm" onclick="assignPerson('judge')">Confirmer</button>
             <button class="btn btn-outline btn-sm" onclick="toggleAssignForm('judge')">Annuler</button>
@@ -357,7 +357,7 @@ async function loadCase() {
 }
 
 function renderCase(c) {
-  document.title = `DOJ Portal — ${c.case_number}`;
+  document.title = `DOJ Portal - ${c.case_number}`;
   document.getElementById('nav-case-num').textContent = c.case_number;
   document.getElementById('h-case-num').textContent = c.case_number;
   document.getElementById('h-title').textContent = c.title;
@@ -373,7 +373,7 @@ function renderCase(c) {
   document.getElementById('h-created').textContent = new Date(c.created_at).toLocaleDateString('fr-FR');
   document.getElementById('h-updated').textContent = new Date(c.updated_at).toLocaleDateString('fr-FR');
   document.getElementById('d-defendant').textContent = c.defendant_name || 'Non renseigné';
-  document.getElementById('d-category').textContent = CAT_LABELS[c.category] || c.category || '—';
+  document.getElementById('d-category').textContent = CAT_LABELS[c.category] || c.category || '-';
   document.getElementById('d-trial').textContent = c.trial_date ? new Date(c.trial_date).toLocaleDateString('fr-FR', {day:'2-digit',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : 'Non fixée';
   document.getElementById('d-verdict').textContent = c.verdict || 'En attente';
   document.getElementById('d-description').textContent = c.description || 'Aucune description.';
@@ -385,7 +385,7 @@ function renderCase(c) {
   const chargesEl = document.getElementById('d-charges');
   const charges = c.charges || [];
   if (charges.length) {
-    chargesEl.innerHTML = charges.map(ch => `<span class="charge-tag">⚖️ ${typeof ch === 'string' ? ch : (ch.article ? ch.article + ' — ' + ch.title : JSON.stringify(ch))}</span>`).join('');
+    chargesEl.innerHTML = charges.map(ch => `<span class="charge-tag">⚖️ ${typeof ch === 'string' ? ch : (ch.article ? ch.article + ' - ' + ch.title : JSON.stringify(ch))}</span>`).join('');
   }
 
   // Permissions
@@ -452,7 +452,7 @@ async function assignPerson(type) {
 
   const label = type === 'ada' ? 'ADA assigné' : 'Juge assigné';
   const { data: pData } = selId ? await sb.from('profiles').select('full_name').eq('id', selId).single() : { data: null };
-  await logHistory(type === 'ada' ? 'ada_assigned' : 'judge_assigned', field, caseData[field] || '—', pData?.full_name || 'Non assigné', null);
+  await logHistory(type === 'ada' ? 'ada_assigned' : 'judge_assigned', field, caseData[field] || '-', pData?.full_name || 'Non assigné', null);
 
   caseData[field] = selId || null;
   if (selId && pData) {
